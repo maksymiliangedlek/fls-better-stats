@@ -4,14 +4,14 @@ type Result = "W" | "D" | "L";
 
 const LABEL: Record<Result, string> = { W: "Z", D: "R", L: "P" };
 
-/** Renders the most-recent `max` results (newest first). Input is oldest->newest. */
+/** Glowing LED-bar form strip. Input is oldest->newest; shows the last `max`. */
 export function FormGuide({ guide, max = 8 }: { guide: Result[]; max?: number }) {
-  const recent = [...guide].slice(-max).reverse();
+  const recent = [...guide].slice(-max);
   return (
     <div className={styles.row} aria-label="Forma">
       {recent.map((r, i) => (
-        <span key={i} className={`${styles.pill} ${styles[r]}`} title={r}>
-          {LABEL[r]}
+        <span key={i} className={`${styles.led} ${styles[r]}`} title={r}>
+          <span className={styles.tag}>{LABEL[r]}</span>
         </span>
       ))}
     </div>

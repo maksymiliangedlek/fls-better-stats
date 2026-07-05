@@ -13,12 +13,11 @@ export function PlayerProfileCard({
   enableTilt?: boolean;
 }) {
   const router = useRouter();
-  const avatar = player.avatar ?? "/crest.png";
 
   return (
     <ProfileCard
-      avatarUrl={avatar}
-      miniAvatarUrl={avatar}
+      avatarUrl={player.avatar}
+      miniAvatarUrl={player.avatar}
       name={player.name}
       title={`${player.goals} G · ${player.assists} A`}
       handle={player.slug}

@@ -1,0 +1,42 @@
+.wrap {
+  width: 100%;
+}
+
+.track {
+  position: relative;
+  height: 10px;
+  border-radius: 999px;
+  background: var(--c-navy-050);
+  overflow: hidden;
+}
+
+.fill {
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  border-radius: 999px;
+  background: linear-gradient(90deg, var(--c-navy), var(--c-gold));
+  box-shadow: 0 0 10px rgba(201, 162, 39, 0.45);
+  transition: width 600ms ease;
+}
+
+.marker {
+  position: absolute;
+  top: -2px;
+  bottom: -2px;
+  width: 2px;
+  transform: translateX(-1px);
+  background: var(--c-gold-dark);
+}
+
+.caption {
+  margin-top: 0.4rem;
+  font-size: 0.72rem;
+  color: var(--c-muted);
+}
+
+.caption strong {
+  color: var(--c-navy);
+  font-size: 0.85rem;
+}

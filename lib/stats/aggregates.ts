@@ -73,3 +73,21 @@ export function buildTeamRecord(matches: TeamMatch[]): TeamRecord {
   record.points = record.wins * 3 + record.draws;
   return record;
 }
+
+export interface GoalsTimelinePoint {
+  date: string;
+  gf: number;
+  ga: number;
+}
+
+/** Per-match goals for/against in Ogniwo's perspective, oldest -> newest. */
+export function buildGoalsTimeline(matches: TeamMatch[]): GoalsTimelinePoint[] {
+  const chronological = [...matches].sort((a, b) => a.date.localeCompare(b.date));
+  const out: GoalsTimelinePoint[] = [];
+  for (const match of chronological) {
+    const outcome = outcomeFor(match);
+    if (!outcome) continue;
+    out.push({ date: match.date, gf: outcome.ogniwoScore, ga: outcome.opponentScore });
+  }
+  return out;
+}

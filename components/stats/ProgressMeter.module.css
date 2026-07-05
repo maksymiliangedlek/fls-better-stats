@@ -1,0 +1,48 @@
+.meter {
+  width: 100%;
+}
+
+.track {
+  position: relative;
+  height: 10px;
+  border-radius: 999px;
+  background: var(--c-navy-050);
+  overflow: hidden;
+}
+
+.center {
+  position: absolute;
+  left: 50%;
+  top: 0;
+  bottom: 0;
+  width: 2px;
+  transform: translateX(-50%);
+  background: rgba(12, 69, 99, 0.35);
+  z-index: 2;
+}
+
+.fill {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  border-radius: 999px;
+}
+
+.pos {
+  background: linear-gradient(90deg, var(--c-gold), var(--c-gold-light));
+  box-shadow: 0 0 10px rgba(201, 162, 39, 0.5);
+}
+
+.neg {
+  background: linear-gradient(90deg, #ff8a7e, #c0392b);
+  box-shadow: 0 0 10px rgba(231, 76, 60, 0.4);
+}
+
+.scale {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 0.4rem;
+  font-size: 0.68rem;
+  color: var(--c-muted);
+  font-variant-numeric: tabular-nums;
+}

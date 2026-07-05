@@ -6,7 +6,12 @@ import {
   getTeamData,
   type Meta,
 } from "../cache/read";
-import { buildTeamRecord, type TeamRecord } from "../stats/aggregates";
+import {
+  buildGoalsTimeline,
+  buildTeamRecord,
+  type GoalsTimelinePoint,
+  type TeamRecord,
+} from "../stats/aggregates";
 import {
   buildCurrentSeasonLeaderboard,
   buildLeaderboard,
@@ -25,6 +30,7 @@ export interface TeamOverview {
   rosterSize: number;
   topScorers: LeaderboardEntry[];
   recentMatches: TeamMatch[];
+  goalsTimeline: GoalsTimelinePoint[];
 }
 
 export async function getTeamOverview(): Promise<{ data: TeamOverview; meta: Meta }> {
@@ -40,6 +46,7 @@ export async function getTeamOverview(): Promise<{ data: TeamOverview; meta: Met
       rosterSize: players.length,
       topScorers: buildLeaderboard(players, "goals").slice(0, 8),
       recentMatches: team?.matches.slice(0, 5) ?? [],
+      goalsTimeline: team ? buildGoalsTimeline(team.matches) : [],
     },
     meta,
   };

@@ -1,17 +1,32 @@
 .card {
+  position: relative;
   display: flex;
   flex-direction: column;
-  gap: 0.25rem;
-  padding: 1.25rem 1.35rem;
-  background: var(--surface);
+  gap: 0.35rem;
+  padding: 1.35rem 1.4rem;
+  background: linear-gradient(160deg, #ffffff 0%, #f2f6f9 100%);
   border: 1px solid var(--c-line);
   border-radius: var(--radius);
-  box-shadow: var(--shadow-sm);
+  box-shadow: 0 10px 30px rgba(6, 39, 54, 0.1), inset 0 1px 0 rgba(255, 255, 255, 0.9);
+  transition: transform 200ms ease, box-shadow 200ms ease;
+}
+
+.card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 18px 44px rgba(6, 39, 54, 0.16), inset 0 1px 0 rgba(255, 255, 255, 0.9);
 }
 
 .accent {
-  background: linear-gradient(145deg, var(--c-navy) 0%, var(--c-navy-700) 100%);
+  background: linear-gradient(155deg, var(--c-navy) 0%, var(--c-navy-900) 100%);
   border-color: transparent;
+  box-shadow: 0 14px 36px rgba(6, 39, 54, 0.28);
+}
+
+.head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
 }
 
 .label {
@@ -26,9 +41,30 @@
   color: rgba(255, 255, 255, 0.7);
 }
 
+.icon {
+  display: grid;
+  place-items: center;
+  width: 34px;
+  height: 34px;
+  border-radius: 10px;
+  color: var(--c-gold-dark);
+  background: rgba(201, 162, 39, 0.12);
+  border: 1px solid rgba(201, 162, 39, 0.3);
+}
+
+.icon svg {
+  width: 20px;
+  height: 20px;
+}
+
+.accent .icon {
+  color: var(--c-gold-light);
+  background: rgba(201, 162, 39, 0.16);
+}
+
 .value {
   font-family: var(--font-display), sans-serif;
-  font-size: 2rem;
+  font-size: 2.1rem;
   font-weight: 800;
   line-height: 1;
   color: var(--text);
@@ -45,4 +81,12 @@
 
 .accent .sub {
   color: rgba(255, 255, 255, 0.65);
+}
+
+.indicator {
+  margin-top: 0.75rem;
+}
+
+.card .indicator :global(.recharts-wrapper) {
+  cursor: default;
 }
