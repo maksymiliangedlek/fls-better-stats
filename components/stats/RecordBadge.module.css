@@ -1,0 +1,41 @@
+.badge {
+  display: inline-flex;
+  gap: 0.75rem;
+}
+
+.item {
+  min-width: 84px;
+  padding: 0.75rem 1rem;
+  border-radius: var(--radius);
+  text-align: center;
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.14);
+}
+
+.value {
+  display: block;
+  font-family: var(--font-display), sans-serif;
+  font-size: 1.8rem;
+  font-weight: 800;
+  line-height: 1;
+  color: #fff;
+}
+
+.w .value {
+  color: #4ade80;
+}
+.d .value {
+  color: var(--c-gold-light);
+}
+.l .value {
+  color: #f87171;
+}
+
+.label {
+  display: block;
+  margin-top: 0.25rem;
+  font-size: 0.72rem;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: rgba(255, 255, 255, 0.7);
+}

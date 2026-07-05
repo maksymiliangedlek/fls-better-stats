@@ -1,6 +1,5 @@
 import { NextRequest } from "next/server";
-import { buildMetaEnvelope, getPlayer } from "@/lib/cache/read";
-import { comparePlayers } from "@/lib/stats/compare";
+import { getCompare } from "@/lib/data/queries";
 import { badRequest, notFound, ok, serverError } from "@/lib/api/response";
 
 export const dynamic = "force-dynamic";
@@ -8,20 +7,15 @@ export const dynamic = "force-dynamic";
 export async function GET(req: NextRequest) {
   try {
     const params = req.nextUrl.searchParams;
-    const a = params.get("a");
-    const b = params.get("b");
-    if (!a || !b) return badRequest("Both 'a' and 'b' player slugs are required.");
-    if (a === b) return badRequest("Choose two different players.");
+    const a = params.get("a") ?? "";
+    const b = params.get("b") ?? "";
 
-    const [profileA, profileB, meta] = await Promise.all([
-      getPlayer(a),
-      getPlayer(b),
-      buildMetaEnvelope(),
-    ]);
-    if (!profileA) return notFound(`Player '${a}' not found in cache.`);
-    if (!profileB) return notFound(`Player '${b}' not found in cache.`);
-
-    return ok(comparePlayers(profileA, profileB), meta);
+    const result = await getCompare(a, b);
+    if (!result.ok) {
+      const msg = result.error;
+      return msg.includes("not found") ? notFound(msg) : badRequest(msg);
+    }
+    return ok(result.data, result.meta);
   } catch (err) {
     return serverError((err as Error).message);
   }

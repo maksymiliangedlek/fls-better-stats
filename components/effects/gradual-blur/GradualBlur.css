@@ -1,0 +1,17 @@
+.gradual-blur {
+  isolation: isolate;
+}
+
+.gradual-blur-inner {
+  pointer-events: none;
+}
+
+.gb-layer {
+  will-change: backdrop-filter;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .gradual-blur {
+    display: none;
+  }
+}

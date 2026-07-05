@@ -1,0 +1,221 @@
+.pc-wrap {
+  --pointer-x: 50%;
+  --pointer-y: 50%;
+  --pointer-from-center: 0;
+  --pointer-from-top: 0.5;
+  --pointer-from-left: 0.5;
+  --rotate-x: 0deg;
+  --rotate-y: 0deg;
+  --background-x: 50%;
+  --background-y: 50%;
+  --card-radius: 24px;
+  --behind-glow-color: rgba(201, 162, 39, 0.45);
+  --behind-glow-size: 30%;
+  --inner-gradient: linear-gradient(145deg, rgba(12, 69, 99, 0.85) 0%, rgba(201, 162, 39, 0.35) 100%);
+  --icon: none;
+  --grain: none;
+
+  position: relative;
+  perspective: 1000px;
+  width: 100%;
+  max-width: 300px;
+  margin-inline: auto;
+}
+
+.pc-glow::before {
+  content: "";
+  position: absolute;
+  inset: -10%;
+  border-radius: calc(var(--card-radius) + 12px);
+  background: radial-gradient(
+    var(--behind-glow-size) var(--behind-glow-size) at var(--pointer-x) var(--pointer-y),
+    var(--behind-glow-color),
+    transparent 60%
+  );
+  filter: blur(24px);
+  opacity: 0;
+  transition: opacity 400ms ease;
+  z-index: 0;
+}
+
+.pc-wrap.pc-active.pc-glow::before {
+  opacity: 1;
+}
+
+.pc-card {
+  position: relative;
+  z-index: 1;
+  aspect-ratio: 0.72;
+  border-radius: var(--card-radius);
+  overflow: hidden;
+  background: var(--inner-gradient), #0c4563;
+  background-blend-mode: overlay, normal;
+  box-shadow: 0 12px 40px rgba(6, 39, 54, 0.28);
+  transform: rotateX(var(--rotate-y)) rotateY(var(--rotate-x));
+  transition: transform 300ms ease, box-shadow 300ms ease;
+  transform-style: preserve-3d;
+  will-change: transform;
+  cursor: pointer;
+}
+
+.pc-wrap.pc-active .pc-card {
+  transition: transform 80ms ease;
+  box-shadow: 0 20px 60px rgba(6, 39, 54, 0.4);
+}
+
+.pc-inside {
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+}
+
+/* Holographic shine + glare follow the pointer */
+.pc-shine {
+  position: absolute;
+  inset: 0;
+  background-image: var(--icon), var(--grain);
+  background-size: cover;
+  mix-blend-mode: color-dodge;
+  opacity: 0.25;
+  pointer-events: none;
+}
+
+.pc-glare {
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(
+    farthest-corner circle at var(--pointer-x) var(--pointer-y),
+    rgba(255, 255, 255, 0.5) 5%,
+    rgba(255, 255, 255, 0.1) 30%,
+    transparent 70%
+  );
+  mix-blend-mode: overlay;
+  opacity: 0;
+  transition: opacity 300ms ease;
+  pointer-events: none;
+}
+
+.pc-wrap.pc-active .pc-glare {
+  opacity: 1;
+}
+
+.pc-content {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  pointer-events: none;
+}
+
+.pc-avatar-content {
+  overflow: hidden;
+  border-radius: inherit;
+}
+
+.pc-avatar {
+  position: absolute;
+  left: 50%;
+  bottom: 0;
+  width: 100%;
+  transform: translateX(-50%) translateZ(0);
+  object-fit: cover;
+  object-position: top center;
+}
+
+.pc-user-info {
+  position: absolute;
+  left: 12px;
+  right: 12px;
+  bottom: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  padding: 8px 10px;
+  border-radius: 14px;
+  background: rgba(6, 39, 54, 0.45);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  pointer-events: auto;
+  z-index: 3;
+}
+
+.pc-user-details {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-width: 0;
+}
+
+.pc-mini-avatar {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 1px solid rgba(255, 255, 255, 0.4);
+  flex: none;
+}
+
+.pc-user-text {
+  min-width: 0;
+}
+
+.pc-handle {
+  font-size: 0.78rem;
+  font-weight: 600;
+  color: #fff;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.pc-status {
+  font-size: 0.7rem;
+  color: rgba(255, 255, 255, 0.7);
+}
+
+.pc-contact-btn {
+  flex: none;
+  border: 1px solid var(--c-gold, #c9a227);
+  background: var(--c-gold, #c9a227);
+  color: #0b1e2a;
+  font-weight: 700;
+  font-size: 0.72rem;
+  padding: 6px 12px;
+  border-radius: 10px;
+  transition: transform 150ms ease, background 150ms ease;
+}
+
+.pc-contact-btn:hover {
+  background: var(--c-gold-light, #e8c766);
+  transform: translateY(-1px);
+}
+
+.pc-details {
+  margin-top: auto;
+  padding: 16px 16px 68px;
+  background: linear-gradient(to top, rgba(6, 39, 54, 0.85), transparent);
+  z-index: 2;
+}
+
+.pc-name {
+  color: #fff;
+  font-size: 1.15rem;
+  margin: 0;
+  text-shadow: 0 2px 8px rgba(0, 0, 0, 0.4);
+}
+
+.pc-title {
+  color: var(--c-gold-light, #e8c766);
+  font-size: 0.82rem;
+  font-weight: 600;
+  margin: 2px 0 0;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .pc-card {
+    transform: none !important;
+    transition: none;
+  }
+}

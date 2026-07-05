@@ -1,0 +1,28 @@
+.row {
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+
+.pill {
+  width: 28px;
+  height: 28px;
+  display: grid;
+  place-items: center;
+  border-radius: 8px;
+  font-weight: 800;
+  font-size: 0.8rem;
+  color: #fff;
+}
+
+.W {
+  background: #1f9d55;
+}
+
+.D {
+  background: #b0870f;
+}
+
+.L {
+  background: #c0392b;
+}

@@ -1,0 +1,44 @@
+.btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.7rem 1.3rem;
+  border-radius: 12px;
+  font-weight: 700;
+  font-size: 0.92rem;
+  transition: transform 150ms ease, background 150ms ease, box-shadow 150ms ease;
+  border: 1px solid transparent;
+}
+
+.btn:hover {
+  transform: translateY(-2px);
+}
+
+.gold {
+  background: var(--c-gold);
+  color: var(--c-navy-900);
+  box-shadow: 0 6px 20px rgba(201, 162, 39, 0.35);
+}
+
+.gold:hover {
+  background: var(--c-gold-light);
+}
+
+.navy {
+  background: var(--c-navy);
+  color: #fff;
+}
+
+.navy:hover {
+  background: var(--c-navy-700);
+}
+
+.ghost {
+  background: transparent;
+  border-color: rgba(255, 255, 255, 0.35);
+  color: #fff;
+}
+
+.ghost:hover {
+  background: rgba(255, 255, 255, 0.1);
+}

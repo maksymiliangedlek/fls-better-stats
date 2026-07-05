@@ -1,0 +1,129 @@
+:root {
+  /* Brand core */
+  --c-navy: #0c4563; /* teal/dark blue */
+  --c-navy-700: #0a3a53;
+  --c-navy-900: #062736;
+  --c-navy-050: #e7eef3;
+
+  --c-gold: #c9a227; /* primary gold accent */
+  --c-gold-light: #e8c766;
+  --c-gold-dark: #a8851b;
+
+  --c-white: #ffffff;
+  --c-off-white: #f5f7fa;
+  --c-ink: #0b1e2a;
+  --c-muted: #5b6b76;
+  --c-line: rgba(12, 69, 99, 0.12);
+
+  /* Semantic aliases */
+  --bg: var(--c-off-white);
+  --surface: var(--c-white);
+  --surface-navy: var(--c-navy);
+  --text: var(--c-ink);
+  --text-on-navy: var(--c-white);
+  --accent: var(--c-gold);
+  --ring: rgba(201, 162, 39, 0.5);
+
+  /* Glass (for GradualBlur sections) */
+  --glass-bg: rgba(255, 255, 255, 0.6);
+  --glass-border: rgba(255, 255, 255, 0.4);
+
+  --radius: 16px;
+  --radius-card: 24px;
+  --shadow: 0 8px 30px rgba(6, 39, 54, 0.12);
+  --shadow-sm: 0 2px 10px rgba(6, 39, 54, 0.08);
+  --maxw: 1200px;
+
+  --header-h: 68px;
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  margin: 0;
+  padding: 0;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: var(--font-sans), system-ui, -apple-system, Segoe UI, Roboto, sans-serif;
+  line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+  min-height: 100vh;
+}
+
+h1,
+h2,
+h3,
+h4 {
+  font-family: var(--font-display), var(--font-sans), system-ui, sans-serif;
+  line-height: 1.1;
+  margin: 0 0 0.5em;
+  letter-spacing: -0.01em;
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+button {
+  font-family: inherit;
+  cursor: pointer;
+}
+
+img {
+  max-width: 100%;
+  display: block;
+}
+
+/* Layout primitives */
+.container {
+  width: 100%;
+  max-width: var(--maxw);
+  margin-inline: auto;
+  padding-inline: 1.25rem;
+}
+
+.section {
+  padding-block: clamp(2.5rem, 5vw, 4.5rem);
+}
+
+.eyebrow {
+  text-transform: uppercase;
+  letter-spacing: 0.14em;
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: var(--accent);
+}
+
+/* Accessible focus */
+:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+  border-radius: 6px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+  }
+}

@@ -1,0 +1,138 @@
+.pickers {
+  display: flex;
+  align-items: flex-end;
+  gap: 1rem;
+  margin-bottom: 2rem;
+}
+
+.swap {
+  flex: none;
+  width: 44px;
+  height: 44px;
+  margin-bottom: 2px;
+  border-radius: 12px;
+  border: 2px solid var(--c-line);
+  background: var(--surface);
+  font-size: 1.2rem;
+  color: var(--c-navy);
+  transition: all 150ms ease;
+}
+
+.swap:hover {
+  background: var(--c-navy);
+  color: #fff;
+  border-color: var(--c-navy);
+}
+
+.hint {
+  color: var(--c-muted);
+  padding: 1rem 0;
+}
+
+.error {
+  color: #c0392b;
+  padding: 1rem 0;
+}
+
+.chartLoading {
+  display: grid;
+  place-items: center;
+  height: 100%;
+  color: var(--c-muted);
+}
+
+.chartGrid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 1.5rem;
+  margin-bottom: 2rem;
+}
+
+.block {
+  margin-bottom: 2rem;
+  background: var(--surface);
+  border: 1px solid var(--c-line);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow-sm);
+  overflow: hidden;
+}
+
+.blockTitle {
+  font-size: 1.05rem;
+  margin: 0;
+  padding: 1rem 1.25rem;
+  border-bottom: 1px solid var(--c-line);
+}
+
+.scroll {
+  overflow-x: auto;
+}
+
+.table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.table th {
+  padding: 0.7rem 1rem;
+  background: var(--c-off-white);
+  font-size: 0.8rem;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--c-muted);
+  text-align: center;
+  white-space: nowrap;
+}
+
+.table td {
+  padding: 0.7rem 1rem;
+  border-bottom: 1px solid var(--c-line);
+  text-align: center;
+  font-variant-numeric: tabular-nums;
+}
+
+.table tbody tr:last-child td {
+  border-bottom: none;
+}
+
+.left {
+  text-align: left !important;
+}
+
+.right {
+  text-align: right !important;
+}
+
+.metric {
+  color: var(--c-muted);
+  font-weight: 600;
+  text-transform: uppercase;
+  font-size: 0.78rem;
+  letter-spacing: 0.04em;
+}
+
+.win {
+  font-weight: 800;
+  color: var(--c-navy);
+}
+
+.gold {
+  color: var(--c-gold-dark) !important;
+}
+
+.navy {
+  color: var(--c-navy) !important;
+}
+
+@media (max-width: 767px) {
+  .chartGrid {
+    grid-template-columns: 1fr;
+  }
+  .pickers {
+    flex-wrap: wrap;
+  }
+  .swap {
+    order: 3;
+    margin: 0 auto;
+  }
+}

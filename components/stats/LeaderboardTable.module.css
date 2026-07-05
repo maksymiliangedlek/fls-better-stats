@@ -1,0 +1,163 @@
+.wrap {
+  background: var(--surface);
+  border: 1px solid var(--c-line);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow-sm);
+  overflow: hidden;
+}
+
+.controls {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1rem 1.25rem;
+  border-bottom: 1px solid var(--c-line);
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
+.tabs {
+  display: inline-flex;
+  background: var(--c-navy-050);
+  border-radius: 10px;
+  padding: 3px;
+}
+
+.tab {
+  border: none;
+  background: transparent;
+  padding: 0.45rem 0.9rem;
+  border-radius: 8px;
+  font-weight: 600;
+  font-size: 0.85rem;
+  color: var(--c-muted);
+  transition: all 150ms ease;
+}
+
+.tabActive {
+  background: var(--c-navy);
+  color: #fff;
+}
+
+.error {
+  color: #c0392b;
+  padding: 0.5rem 1.25rem;
+  margin: 0;
+}
+
+.scroll {
+  overflow-x: auto;
+}
+
+.table {
+  width: 100%;
+  border-collapse: collapse;
+  transition: opacity 150ms ease;
+}
+
+.loading {
+  opacity: 0.55;
+}
+
+.table thead th {
+  text-align: right;
+  padding: 0.75rem 0.9rem;
+  background: var(--c-off-white);
+  border-bottom: 1px solid var(--c-line);
+  white-space: nowrap;
+  position: sticky;
+  top: 0;
+}
+
+.table tbody td {
+  text-align: right;
+  padding: 0.7rem 0.9rem;
+  border-bottom: 1px solid var(--c-line);
+  font-variant-numeric: tabular-nums;
+}
+
+.table tbody tr:hover {
+  background: var(--c-navy-050);
+}
+
+.rankCol {
+  text-align: center !important;
+  width: 44px;
+  color: var(--c-muted);
+}
+
+.nameCol {
+  text-align: left !important;
+  min-width: 160px;
+  position: sticky;
+  left: 0;
+  background: var(--surface);
+}
+
+.table thead .nameCol {
+  background: var(--c-off-white);
+}
+
+.playerLink {
+  font-weight: 600;
+  color: var(--c-navy);
+}
+
+.playerLink:hover {
+  color: var(--c-gold-dark);
+  text-decoration: underline;
+}
+
+.strong {
+  font-weight: 800;
+  color: var(--c-navy);
+}
+
+.sortBtn {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  border: none;
+  background: transparent;
+  font-weight: 700;
+  font-size: 0.8rem;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--c-muted);
+  margin-left: auto;
+}
+
+.sortBtn:hover {
+  color: var(--c-navy);
+}
+
+.sortActive {
+  color: var(--c-gold-dark);
+}
+
+.caret {
+  font-size: 0.6rem;
+}
+
+.colShort {
+  display: none;
+}
+
+.empty {
+  text-align: center !important;
+  color: var(--c-muted);
+  padding: 2rem !important;
+}
+
+@media (max-width: 639px) {
+  .colFull {
+    display: none;
+  }
+  .colShort {
+    display: inline;
+  }
+  .table thead th,
+  .table tbody td {
+    padding: 0.6rem 0.55rem;
+  }
+}
