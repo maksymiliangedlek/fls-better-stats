@@ -1,0 +1,44 @@
+import { STALE_AFTER_MS } from "../fls/config";
+import type { PlayerProfile } from "../types/player";
+import type { TeamData } from "../types/team";
+import { getStore } from "./kv";
+import { INITIAL_META, KEY_META, KEY_ROSTER, KEY_TEAM, playerKey, type SyncMeta } from "./keys";
+
+export async function getMeta(): Promise<SyncMeta> {
+  const meta = await getStore().get<SyncMeta>(KEY_META);
+  return meta ?? { ...INITIAL_META };
+}
+
+export async function getRoster(): Promise<string[]> {
+  return (await getStore().get<string[]>(KEY_ROSTER)) ?? [];
+}
+
+export async function getTeamData(): Promise<TeamData | null> {
+  return getStore().get<TeamData>(KEY_TEAM);
+}
+
+export async function getPlayer(slug: string): Promise<PlayerProfile | null> {
+  return getStore().get<PlayerProfile>(playerKey(slug));
+}
+
+export async function getAllPlayers(): Promise<PlayerProfile[]> {
+  const roster = await getRoster();
+  if (roster.length === 0) return [];
+  const profiles = await getStore().getMany<PlayerProfile>(roster.map(playerKey));
+  return profiles.filter((p): p is PlayerProfile => p !== null);
+}
+
+export function isStale(lastSyncAt: number | null): boolean {
+  if (!lastSyncAt) return true;
+  return Date.now() - lastSyncAt > STALE_AFTER_MS;
+}
+
+export interface Meta {
+  fetchedAt: number | null;
+  stale: boolean;
+}
+
+export async function buildMetaEnvelope(): Promise<Meta> {
+  const meta = await getMeta();
+  return { fetchedAt: meta.lastSyncAt, stale: isStale(meta.lastSyncAt) };
+}

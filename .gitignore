@@ -1,3 +1,18 @@
 .idea/
 data.json
 .venv
+
+# node / next
+node_modules/
+.next/
+out/
+*.tsbuildinfo
+next-env.d.ts
+
+# local cache for dev sync
+.cache/
+
+# env
+.env
+.env*.local
+.vercel
