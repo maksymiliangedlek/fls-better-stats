@@ -33,8 +33,8 @@ export function SeasonBars({ data }: { data: SeasonSplit[] }) {
         <YAxis tick={{ fontSize: 11, fill: CHART.axis }} allowDecimals={false} />
         <Tooltip contentStyle={tooltipStyle} cursor={{ fill: "rgba(12,69,99,0.05)" }} />
         <Legend wrapperStyle={{ fontSize: 12 }} />
-        <Bar dataKey="goals" name="Bramki" fill={CHART.gold} radius={[4, 4, 0, 0]} />
-        <Bar dataKey="assists" name="Asysty" fill={CHART.navy} radius={[4, 4, 0, 0]} />
+        <Bar dataKey="goals" name="Bramki" fill={CHART.gold} radius={[4, 4, 0, 0]} isAnimationActive={false} />
+        <Bar dataKey="assists" name="Asysty" fill={CHART.navy} radius={[4, 4, 0, 0]} isAnimationActive={false} />
       </BarChart>
     </ResponsiveContainer>
   );

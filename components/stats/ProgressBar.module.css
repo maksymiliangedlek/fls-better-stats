@@ -17,8 +17,7 @@
   bottom: 0;
   border-radius: 999px;
   background: linear-gradient(90deg, var(--c-navy), var(--c-gold));
-  box-shadow: 0 0 10px rgba(201, 162, 39, 0.45);
-  transition: width 600ms ease;
+  transition: width var(--duration-spring) var(--ease-spring);
 }
 
 .marker {

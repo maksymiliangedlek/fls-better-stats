@@ -5,7 +5,7 @@ import { Crest } from "./Crest";
 import styles from "./SiteHeader.module.css";
 
 const NAV = [
-  { href: "/", label: "Start" },
+  { href: "/", label: "Drużyna" },
   { href: "/players", label: "Skład" },
   { href: "/compare", label: "Porównaj" },
 ];

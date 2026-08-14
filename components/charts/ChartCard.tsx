@@ -1,12 +1,10 @@
 import type { ReactNode } from "react";
-import GradualBlur from "../effects/gradual-blur/GradualBlur";
 import styles from "./ChartCard.module.css";
 
 export function ChartCard({
   title,
   subtitle,
   children,
-  blur = false,
 }: {
   title: string;
   subtitle?: string;
@@ -20,7 +18,6 @@ export function ChartCard({
         {subtitle && <span className={styles.subtitle}>{subtitle}</span>}
       </div>
       <div className={styles.body}>{children}</div>
-      {blur && <GradualBlur position="bottom" strength={1.5} height="3rem" divCount={4} />}
     </div>
   );
 }

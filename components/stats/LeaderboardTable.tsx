@@ -1,9 +1,11 @@
 "use client";
 import { useEffect, useState, useTransition } from "react";
 import Link from "next/link";
+import { motion } from "motion/react";
 import { fetchRoster, type SortKey } from "@/lib/client/api";
 import type { LeaderboardEntry } from "@/lib/stats/leaderboards";
 import type { RosterBoard } from "@/lib/data/queries";
+import { usePrefersReducedMotion } from "@/lib/client/useMediaQuery";
 import styles from "./LeaderboardTable.module.css";
 
 type Scope = "all" | "current";
@@ -29,6 +31,10 @@ export function LeaderboardTable({ initial }: { initial: RosterBoard }) {
   const [sort, setSort] = useState<SortKey>(initial.sort);
   const [error, setError] = useState<string | null>(null);
   const [isPending, startTransition] = useTransition();
+  const reduced = usePrefersReducedMotion();
+  const tabSpring = reduced
+    ? { duration: 0.2 }
+    : { type: "spring" as const, bounce: 0, duration: 0.35 };
 
   useEffect(() => {
     if (scope === initial.scope && sort === initial.sort) {
@@ -55,22 +61,26 @@ export function LeaderboardTable({ initial }: { initial: RosterBoard }) {
     <div className={styles.wrap}>
       <div className={styles.controls}>
         <div className={styles.tabs} role="tablist" aria-label="Zakres">
-          <button
-            role="tab"
-            aria-selected={scope === "all"}
-            className={`${styles.tab} ${scope === "all" ? styles.tabActive : ""}`}
-            onClick={() => setScope("all")}
-          >
-            Wszech czasów
-          </button>
-          <button
-            role="tab"
-            aria-selected={scope === "current"}
-            className={`${styles.tab} ${scope === "current" ? styles.tabActive : ""}`}
-            onClick={() => setScope("current")}
-          >
-            Bieżący sezon
-          </button>
+          {(
+            [
+              { key: "all" as const, label: "Wszech czasów" },
+              { key: "current" as const, label: "Bieżący sezon" },
+            ] as const
+          ).map((tab) => (
+            <button
+              key={tab.key}
+              role="tab"
+              aria-selected={scope === tab.key}
+              className={`${styles.tab} ${scope === tab.key ? styles.tabActive : ""}`}
+              onClick={() => setScope(tab.key)}
+              type="button"
+            >
+              {scope === tab.key && (
+                <motion.span className={styles.tabPill} layoutId="leaderboard-scope" transition={tabSpring} />
+              )}
+              <span className={styles.tabLabel}>{tab.label}</span>
+            </button>
+          ))}
         </div>
       </div>
 

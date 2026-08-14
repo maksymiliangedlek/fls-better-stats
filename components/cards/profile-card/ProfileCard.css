@@ -27,7 +27,7 @@
   perspective: 600px;
   transform: translate3d(0, 0, 0.1px);
   position: relative;
-  touch-action: none;
+  touch-action: pan-y;
   width: 100%;
   max-width: 300px;
   margin-inline: auto;
@@ -64,25 +64,31 @@
   box-shadow: rgba(0, 0, 0, 0.55) calc((var(--pointer-from-left) * 12px) - 4px)
       calc((var(--pointer-from-top) * 22px) - 7px) 24px -6px,
     0 10px 30px rgba(6, 39, 54, 0.25);
-  transition: transform 1s ease, box-shadow 0.6s ease;
-  transform: translateZ(0) rotateX(0deg) rotateY(0deg);
+  transform: translateZ(0) rotateX(var(--rotate-y)) rotateY(var(--rotate-x))
+    scale(var(--card-press, 1));
   backface-visibility: hidden;
   cursor: pointer;
+  will-change: transform;
 }
 
 .pc-card-shell {
   position: relative;
   z-index: 1;
+  display: block;
 }
 
-.pc-card-shell.active .pc-card,
-.pc-card-shell:hover .pc-card {
+.pc-card-link {
+  display: block;
+  color: inherit;
+  text-decoration: none;
+}
+
+.pc-card-wrapper.pressed {
+  --card-press: 0.97;
+}
+
+.pc-card-wrapper.pressed .pc-card {
   transition: none;
-  transform: translateZ(0) rotateX(var(--rotate-y)) rotateY(var(--rotate-x));
-}
-
-.pc-card-shell.entering .pc-card {
-  transition: transform 180ms ease-out;
 }
 
 .pc-inside {
@@ -240,7 +246,6 @@
   box-shadow: 0 10px 26px rgba(0, 0, 0, 0.45);
   transform: translateX(calc(-50% + (var(--pointer-from-left) - 0.5) * 8px)) translateZ(24px)
     scale(calc(1 + var(--pointer-from-center) * 0.02));
-  transition: transform 140ms ease-out;
   will-change: transform;
 }
 
@@ -360,14 +365,16 @@
   font-size: 0.72rem;
   padding: 7px 12px;
   border-radius: 10px;
-  cursor: pointer;
-  transition: transform 150ms ease, background 150ms ease, box-shadow 150ms ease;
+  cursor: default;
+  pointer-events: none;
 }
 
-.pc-contact-btn:hover {
-  background: var(--c-gold-light, #e8c766);
-  transform: translateY(-1px);
-  box-shadow: 0 6px 16px rgba(201, 162, 39, 0.4);
+@media (prefers-reduced-transparency: reduce) {
+  .pc-user-info {
+    background: rgba(12, 69, 99, 0.92);
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
+  }
 }
 
 @media (max-width: 479px) {
@@ -386,5 +393,8 @@
   .pc-shine,
   .pc-glare {
     display: none;
+  }
+  .pc-card-wrapper.pressed .pc-card {
+    transform: none;
   }
 }

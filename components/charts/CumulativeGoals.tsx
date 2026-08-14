@@ -41,6 +41,7 @@ export function CumulativeGoals({ data }: { data: CumulativePoint[] }) {
           stroke={CHART.gold}
           strokeWidth={2.5}
           fill="url(#goldFill)"
+          isAnimationActive={false}
         />
         <Area
           type="monotone"
@@ -49,6 +50,7 @@ export function CumulativeGoals({ data }: { data: CumulativePoint[] }) {
           stroke={CHART.navy}
           strokeWidth={2.5}
           fill="url(#navyFill)"
+          isAnimationActive={false}
         />
       </AreaChart>
     </ResponsiveContainer>

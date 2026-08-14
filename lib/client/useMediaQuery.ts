@@ -20,11 +20,6 @@ export function usePrefersReducedMotion(): boolean {
   return useMediaQuery("(prefers-reduced-motion: reduce)");
 }
 
-/** True on devices with a precise pointer (mouse/trackpad), i.e. not touch. */
-export function usePointerFine(): boolean {
-  return useMediaQuery("(pointer: fine)");
-}
-
 export function useIsMobile(): boolean {
   return useMediaQuery("(max-width: 639px)");
 }

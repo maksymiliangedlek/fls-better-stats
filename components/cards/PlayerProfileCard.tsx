@@ -1,5 +1,4 @@
 "use client";
-import { useRouter } from "next/navigation";
 import ProfileCard from "./profile-card/ProfileCard";
 import type { LeaderboardEntry } from "@/lib/stats/leaderboards";
 
@@ -12,8 +11,6 @@ export function PlayerProfileCard({
   status?: string;
   enableTilt?: boolean;
 }) {
-  const router = useRouter();
-
   return (
     <ProfileCard
       avatarUrl={player.avatar}
@@ -25,9 +22,9 @@ export function PlayerProfileCard({
       contactText="Profil"
       showUserInfo
       enableTilt={enableTilt}
+      href={`/players/${player.slug}`}
       behindGlowColor="rgba(201, 162, 39, 0.45)"
       innerGradient="linear-gradient(145deg, rgba(12,69,99,0.9) 0%, rgba(201,162,39,0.35) 100%)"
-      onContactClick={() => router.push(`/players/${player.slug}`)}
     />
   );
 }

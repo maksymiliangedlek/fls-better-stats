@@ -40,6 +40,11 @@
   font-size: clamp(1.6rem, 4vh, 3rem);
 }
 
+.menu__item-link:active {
+  transform: scale(0.97);
+  transition: transform 100ms ease-out;
+}
+
 .menu__item-link:hover {
   color: inherit;
 }

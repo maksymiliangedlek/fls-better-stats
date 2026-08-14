@@ -21,7 +21,6 @@ export function HeroBadge({ size = 260 }: { size?: number }) {
           className={styles.crest}
         />
       </div>
-      <div className={styles.sheen} />
     </div>
   );
 }

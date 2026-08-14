@@ -30,6 +30,7 @@ export function FormLineChart({ data }: { data: RollingPoint[] }) {
           strokeWidth={3}
           dot={false}
           activeDot={{ r: 5, fill: CHART.navy }}
+          isAnimationActive={false}
         />
       </LineChart>
     </ResponsiveContainer>

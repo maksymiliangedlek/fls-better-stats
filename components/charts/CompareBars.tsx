@@ -43,8 +43,8 @@ export function CompareBars({
         <YAxis tick={{ fontSize: 11, fill: CHART.axis }} allowDecimals={false} />
         <Tooltip contentStyle={tooltipStyle} cursor={{ fill: "rgba(12,69,99,0.05)" }} />
         <Legend wrapperStyle={{ fontSize: 12 }} />
-        <Bar dataKey={nameA} fill={CHART.gold} radius={[4, 4, 0, 0]} />
-        <Bar dataKey={nameB} fill={CHART.navy} radius={[4, 4, 0, 0]} />
+        <Bar dataKey={nameA} fill={CHART.gold} radius={[4, 4, 0, 0]} isAnimationActive={false} />
+        <Bar dataKey={nameB} fill={CHART.navy} radius={[4, 4, 0, 0]} isAnimationActive={false} />
       </BarChart>
     </ResponsiveContainer>
   );

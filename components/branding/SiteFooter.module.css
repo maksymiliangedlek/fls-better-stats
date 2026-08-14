@@ -1,8 +1,9 @@
 .footer {
   margin-top: 3rem;
-  background: var(--c-navy-900);
-  color: rgba(255, 255, 255, 0.7);
+  background: transparent;
+  color: var(--c-muted);
   padding-block: 1.5rem;
+  border-top: 1px solid var(--c-line);
 }
 
 .inner {
@@ -17,9 +18,8 @@
   display: flex;
   align-items: center;
   gap: 0.5rem;
-  font-family: var(--font-display), sans-serif;
-  font-weight: 700;
-  color: #fff;
+  font-weight: 650;
+  color: var(--c-navy);
 }
 
 .note {
@@ -28,6 +28,11 @@
 }
 
 .link {
-  color: var(--c-gold-light);
+  color: var(--c-navy);
   text-decoration: underline;
+  text-underline-offset: 0.15em;
+}
+
+.link:active {
+  transform: scale(var(--press-scale));
 }

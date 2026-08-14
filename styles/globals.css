@@ -1,11 +1,11 @@
 :root {
   /* Brand core */
-  --c-navy: #0c4563; /* teal/dark blue */
+  --c-navy: #0c4563;
   --c-navy-700: #0a3a53;
   --c-navy-900: #062736;
   --c-navy-050: #e7eef3;
 
-  --c-gold: #c9a227; /* primary gold accent */
+  --c-gold: #c9a227;
   --c-gold-light: #e8c766;
   --c-gold-dark: #a8851b;
 
@@ -15,7 +15,6 @@
   --c-muted: #5b6b76;
   --c-line: rgba(12, 69, 99, 0.12);
 
-  /* Semantic aliases */
   --bg: var(--c-off-white);
   --surface: var(--c-white);
   --surface-navy: var(--c-navy);
@@ -24,17 +23,30 @@
   --accent: var(--c-gold);
   --ring: rgba(201, 162, 39, 0.5);
 
-  /* Glass (for GradualBlur sections) */
-  --glass-bg: rgba(255, 255, 255, 0.6);
-  --glass-border: rgba(255, 255, 255, 0.4);
+  /* System font — optical sizing, tracking tables, Dynamic Type */
+  --font-sans: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  --font-display: var(--font-sans);
+
+  /* Materials */
+  --material-chrome: rgba(12, 69, 99, 0.72);
+  --material-chrome-blur: blur(20px) saturate(180%);
+  --material-heavy: var(--c-navy);
+  --material-interactive: rgba(255, 255, 255, 0.88);
+  --material-edge: rgba(255, 255, 255, 0.4);
+  --glass-bg: var(--surface);
+  --glass-border: var(--c-line);
 
   --radius: 16px;
   --radius-card: 24px;
   --shadow: 0 8px 30px rgba(6, 39, 54, 0.12);
   --shadow-sm: 0 2px 10px rgba(6, 39, 54, 0.08);
   --maxw: 1200px;
-
   --header-h: 68px;
+
+  /* Critically damped UI spring (not a fixed duration — settle ~0.35s) */
+  --ease-spring: cubic-bezier(0.32, 0.72, 0, 1);
+  --duration-spring: 0.35s;
+  --press-scale: 0.97;
 }
 
 *,
@@ -56,8 +68,11 @@ html {
 body {
   background: var(--bg);
   color: var(--text);
-  font-family: var(--font-sans), system-ui, -apple-system, Segoe UI, Roboto, sans-serif;
+  font-family: var(--font-sans);
+  font-optical-sizing: auto;
+  font-size: 1rem;
   line-height: 1.5;
+  letter-spacing: 0;
   -webkit-font-smoothing: antialiased;
   text-rendering: optimizeLegibility;
   min-height: 100vh;
@@ -67,9 +82,28 @@ h1,
 h2,
 h3,
 h4 {
-  font-family: var(--font-display), var(--font-sans), system-ui, sans-serif;
-  line-height: 1.1;
+  font-family: var(--font-display);
+  font-optical-sizing: auto;
   margin: 0 0 0.5em;
+}
+
+h1 {
+  font-size: clamp(2rem, 5vw, 3.5rem);
+  font-weight: 700;
+  line-height: 1.05;
+  letter-spacing: -0.02em;
+}
+
+h2 {
+  font-weight: 700;
+  line-height: 1.15;
+  letter-spacing: -0.015em;
+}
+
+h3,
+h4 {
+  font-weight: 650;
+  line-height: 1.25;
   letter-spacing: -0.01em;
 }
 
@@ -88,7 +122,6 @@ img {
   display: block;
 }
 
-/* Layout primitives */
 .container {
   width: 100%;
   max-width: var(--maxw);
@@ -101,14 +134,14 @@ img {
 }
 
 .eyebrow {
-  text-transform: uppercase;
-  letter-spacing: 0.14em;
-  font-size: 0.75rem;
-  font-weight: 700;
+  display: inline-block;
+  font-size: 0.8rem;
+  font-weight: 650;
+  line-height: 1.3;
+  letter-spacing: 0;
   color: var(--accent);
 }
 
-/* Accessible focus */
 :focus-visible {
   outline: 2px solid var(--accent);
   outline-offset: 2px;
@@ -119,11 +152,35 @@ img {
   html {
     scroll-behavior: auto;
   }
+
   *,
   *::before,
   *::after {
-    animation-duration: 0.001ms !important;
-    animation-iteration-count: 1 !important;
-    transition-duration: 0.001ms !important;
+    animation: none !important;
+    transition-property: opacity, color, background-color, border-color, box-shadow !important;
+    transition-duration: 0.2s !important;
+  }
+}
+
+@media (prefers-reduced-transparency: reduce) {
+  :root {
+    --material-chrome: var(--c-navy);
+    --material-chrome-blur: none;
+    --material-interactive: var(--c-white);
+  }
+}
+
+@media (prefers-contrast: more) {
+  :root {
+    --material-chrome: var(--c-navy);
+    --material-chrome-blur: none;
+    --c-line: rgba(12, 69, 99, 0.45);
+    --c-muted: #3d4d57;
+    --shadow: none;
+    --shadow-sm: none;
+  }
+
+  body {
+    background: var(--c-white);
   }
 }

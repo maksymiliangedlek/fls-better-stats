@@ -4,24 +4,29 @@
  * Vendored from ReactBits (JS+CSS variant), ported to TS. Adapted for this app:
  * the avatar photo sits ABOVE the name, no image renders when avatarUrl is empty,
  * and the hover shimmer is intensified.
+ *
+ * Tilt is interruptible: springs from the live presentation value, 1:1 with the
+ * pointer after a short hysteresis so vertical scroll still wins on touch.
  */
 import React, { useCallback, useEffect, useMemo, useRef } from "react";
+import Link from "next/link";
 import "./ProfileCard.css";
 
 const DEFAULT_INNER_GRADIENT = "linear-gradient(145deg,#60496e8c 0%,#71C4FF44 100%)";
+const HYSTERESIS_PX = 10;
+const FLICK_VELOCITY = 800;
 
 const ANIMATION_CONFIG = {
   INITIAL_DURATION: 1200,
   INITIAL_X_OFFSET: 70,
   INITIAL_Y_OFFSET: 60,
   DEVICE_BETA_OFFSET: 20,
-  ENTER_TRANSITION_MS: 180,
 } as const;
 
 const clamp = (v: number, min = 0, max = 100) => Math.min(Math.max(v, min), max);
 const round = (v: number, precision = 3) => parseFloat(v.toFixed(precision));
 const adjust = (v: number, fMin: number, fMax: number, tMin: number, tMax: number) =>
-  round(tMin + ((tMax - tMin) * (v - fMin)) / (fMax - fMin));
+  round(tMin + ((v - fMin) * (tMax - tMin)) / (fMax - fMin));
 
 export interface ProfileCardProps {
   avatarUrl?: string | null;
@@ -42,6 +47,7 @@ export interface ProfileCardProps {
   status?: string;
   contactText?: string;
   showUserInfo?: boolean;
+  href?: string;
   onContactClick?: () => void;
 }
 
@@ -64,12 +70,27 @@ function ProfileCardComponent({
   status = "",
   contactText = "Contact",
   showUserInfo = true,
+  href,
   onContactClick,
 }: ProfileCardProps) {
   const wrapRef = useRef<HTMLDivElement>(null);
   const shellRef = useRef<HTMLDivElement>(null);
-  const enterTimerRef = useRef<number | null>(null);
   const leaveRafRef = useRef<number | null>(null);
+  const gestureRef = useRef<{
+    pointerId: number | null;
+    startX: number;
+    startY: number;
+    mode: "undecided" | "tilt" | "scroll" | "press";
+    moved: boolean;
+    history: { x: number; y: number; t: number }[];
+  }>({
+    pointerId: null,
+    startX: 0,
+    startY: 0,
+    mode: "undecided",
+    moved: false,
+    history: [],
+  });
 
   const tiltEngine = useMemo(() => {
     if (!enableTilt) return null;
@@ -82,6 +103,10 @@ function ProfileCardComponent({
     let currentY = 0;
     let targetX = 0;
     let targetY = 0;
+    let velX = 0;
+    let velY = 0;
+    let settling = false;
+    let dampingRatio = 1;
 
     const DEFAULT_TAU = 0.14;
     const INITIAL_TAU = 0.6;
@@ -119,18 +144,33 @@ function ProfileCardComponent({
     const step = (ts: number) => {
       if (!running) return;
       if (lastTs === 0) lastTs = ts;
-      const dt = (ts - lastTs) / 1000;
+      const dt = Math.min((ts - lastTs) / 1000, 0.032);
       lastTs = ts;
 
-      const tau = ts < initialUntil ? INITIAL_TAU : DEFAULT_TAU;
-      const k = 1 - Math.exp(-dt / tau);
-
-      currentX += (targetX - currentX) * k;
-      currentY += (targetY - currentY) * k;
+      if (settling) {
+        const response = 0.35;
+        const stiffness = (2 * Math.PI) / response;
+        const k = stiffness * stiffness;
+        const c = 2 * stiffness * dampingRatio;
+        const ax = k * (targetX - currentX) - c * velX;
+        const ay = k * (targetY - currentY) - c * velY;
+        velX += ax * dt;
+        velY += ay * dt;
+        currentX += velX * dt;
+        currentY += velY * dt;
+      } else {
+        const tau = ts < initialUntil ? INITIAL_TAU : DEFAULT_TAU;
+        const k = 1 - Math.exp(-dt / tau);
+        currentX += (targetX - currentX) * k;
+        currentY += (targetY - currentY) * k;
+      }
 
       setVarsFromXY(currentX, currentY);
 
-      const stillFar = Math.abs(targetX - currentX) > 0.05 || Math.abs(targetY - currentY) > 0.05;
+      const stillFar =
+        Math.abs(targetX - currentX) > 0.05 ||
+        Math.abs(targetY - currentY) > 0.05 ||
+        Math.hypot(velX, velY) > 8;
 
       if (stillFar || document.hasFocus()) {
         rafId = requestAnimationFrame(step);
@@ -155,17 +195,33 @@ function ProfileCardComponent({
       setImmediate(x: number, y: number) {
         currentX = x;
         currentY = y;
+        targetX = x;
+        targetY = y;
+        velX = 0;
+        velY = 0;
+        settling = false;
         setVarsFromXY(currentX, currentY);
       },
       setTarget(x: number, y: number) {
+        settling = false;
         targetX = x;
         targetY = y;
         start();
       },
-      toCenter() {
+      setVelocity(vx: number, vy: number) {
+        velX = vx;
+        velY = vy;
+      },
+      toCenter(releaseVx = 0, releaseVy = 0) {
         const shell = shellRef.current;
         if (!shell) return;
-        this.setTarget(shell.clientWidth / 2, shell.clientHeight / 2);
+        settling = true;
+        velX = releaseVx;
+        velY = releaseVy;
+        dampingRatio = Math.hypot(releaseVx, releaseVy) > FLICK_VELOCITY ? 0.8 : 1;
+        targetX = shell.clientWidth / 2;
+        targetY = shell.clientHeight / 2;
+        start();
       },
       beginInitial(durationMs: number) {
         initialUntil = performance.now() + durationMs;
@@ -188,11 +244,66 @@ function ProfileCardComponent({
     return { x: evt.clientX - rect.left, y: evt.clientY - rect.top };
   };
 
+  const releaseVelocity = () => {
+    const hist = gestureRef.current.history;
+    if (hist.length < 2) return { vx: 0, vy: 0 };
+    const a = hist[hist.length - 1];
+    const b = hist[Math.max(0, hist.length - 3)];
+    const dt = Math.max((a.t - b.t) / 1000, 0.008);
+    return { vx: (a.x - b.x) / dt, vy: (a.y - b.y) / dt };
+  };
+
+  const handlePointerDown = useCallback(
+    (event: PointerEvent) => {
+      const wrap = wrapRef.current;
+      const shell = shellRef.current;
+      if (!shell || !wrap) return;
+      wrap.classList.add("pressed");
+      gestureRef.current = {
+        pointerId: event.pointerId,
+        startX: event.clientX,
+        startY: event.clientY,
+        mode: "undecided",
+        moved: false,
+        history: [],
+      };
+    },
+    [],
+  );
+
   const handlePointerMove = useCallback(
     (event: PointerEvent) => {
       const shell = shellRef.current;
+      const wrap = wrapRef.current;
       if (!shell || !tiltEngine) return;
+      const g = gestureRef.current;
       const { x, y } = getOffsets(event, shell);
+      g.history.push({ x, y, t: performance.now() });
+      if (g.history.length > 5) g.history.shift();
+
+      if (g.pointerId === event.pointerId && g.mode !== "tilt") {
+        const dx = event.clientX - g.startX;
+        const dy = event.clientY - g.startY;
+        const dist = Math.hypot(dx, dy);
+        if (dist < HYSTERESIS_PX) return;
+        g.moved = true;
+        wrap?.classList.remove("pressed");
+        const isCoarse = event.pointerType === "touch";
+        if (isCoarse && Math.abs(dy) > Math.abs(dx) * 1.15) {
+          g.mode = "scroll";
+          return;
+        }
+        g.mode = "tilt";
+        try {
+          shell.setPointerCapture(event.pointerId);
+        } catch {
+          /* capture can fail if the element is gone */
+        }
+      }
+
+      if (g.mode === "scroll") return;
+
+      shell.classList.add("active");
       tiltEngine.setTarget(x, y);
     },
     [tiltEngine],
@@ -202,25 +313,19 @@ function ProfileCardComponent({
     (event: PointerEvent) => {
       const shell = shellRef.current;
       if (!shell || !tiltEngine) return;
-
+      if (event.pointerType === "touch") return;
       shell.classList.add("active");
-      shell.classList.add("entering");
-      if (enterTimerRef.current) window.clearTimeout(enterTimerRef.current);
-      enterTimerRef.current = window.setTimeout(() => {
-        shell.classList.remove("entering");
-      }, ANIMATION_CONFIG.ENTER_TRANSITION_MS);
-
       const { x, y } = getOffsets(event, shell);
       tiltEngine.setTarget(x, y);
     },
     [tiltEngine],
   );
 
-  const handlePointerLeave = useCallback(() => {
+  const settle = useCallback(() => {
     const shell = shellRef.current;
     if (!shell || !tiltEngine) return;
-
-    tiltEngine.toCenter();
+    const { vx, vy } = releaseVelocity();
+    tiltEngine.toCenter(vx, vy);
 
     const checkSettle = () => {
       const { x, y, tx, ty } = tiltEngine.getCurrent();
@@ -235,6 +340,43 @@ function ProfileCardComponent({
     if (leaveRafRef.current) cancelAnimationFrame(leaveRafRef.current);
     leaveRafRef.current = requestAnimationFrame(checkSettle);
   }, [tiltEngine]);
+
+  const handlePointerUp = useCallback(
+    (event: PointerEvent) => {
+      const wrap = wrapRef.current;
+      wrap?.classList.remove("pressed");
+      const g = gestureRef.current;
+      if (g.pointerId === event.pointerId) {
+        const shell = shellRef.current;
+        if (shell && g.mode === "tilt") {
+          try {
+            shell.releasePointerCapture(event.pointerId);
+          } catch {
+            /* ignore */
+          }
+        }
+        g.pointerId = null;
+        g.mode = "undecided";
+      }
+      settle();
+    },
+    [settle],
+  );
+
+  const handlePointerLeave = useCallback(() => {
+    wrapRef.current?.classList.remove("pressed");
+    settle();
+  }, [settle]);
+
+  const handleClick = useCallback(
+    (event: React.MouseEvent) => {
+      if (gestureRef.current.moved) {
+        event.preventDefault();
+        event.stopPropagation();
+      }
+    },
+    [],
+  );
 
   const handleDeviceOrientation = useCallback(
     (event: DeviceOrientationEvent) => {
@@ -260,14 +402,18 @@ function ProfileCardComponent({
 
   useEffect(() => {
     if (!enableTilt || !tiltEngine) return;
+    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
     const shell = shellRef.current;
     if (!shell) return;
 
     shell.addEventListener("pointerenter", handlePointerEnter);
+    shell.addEventListener("pointerdown", handlePointerDown);
     shell.addEventListener("pointermove", handlePointerMove);
+    shell.addEventListener("pointerup", handlePointerUp);
+    shell.addEventListener("pointercancel", handlePointerUp);
     shell.addEventListener("pointerleave", handlePointerLeave);
 
-    const handleClick = () => {
+    const handleMotionPermission = () => {
       if (!enableMobileTilt || location.protocol !== "https:") return;
       const anyMotion = window.DeviceMotionEvent as unknown as {
         requestPermission?: () => Promise<string>;
@@ -285,7 +431,7 @@ function ProfileCardComponent({
         window.addEventListener("deviceorientation", handleDeviceOrientation);
       }
     };
-    shell.addEventListener("click", handleClick);
+    shell.addEventListener("click", handleMotionPermission);
 
     const initialX = (shell.clientWidth || 0) - ANIMATION_CONFIG.INITIAL_X_OFFSET;
     const initialY = ANIMATION_CONFIG.INITIAL_Y_OFFSET;
@@ -295,14 +441,15 @@ function ProfileCardComponent({
 
     return () => {
       shell.removeEventListener("pointerenter", handlePointerEnter);
+      shell.removeEventListener("pointerdown", handlePointerDown);
       shell.removeEventListener("pointermove", handlePointerMove);
+      shell.removeEventListener("pointerup", handlePointerUp);
+      shell.removeEventListener("pointercancel", handlePointerUp);
       shell.removeEventListener("pointerleave", handlePointerLeave);
-      shell.removeEventListener("click", handleClick);
+      shell.removeEventListener("click", handleMotionPermission);
       window.removeEventListener("deviceorientation", handleDeviceOrientation);
-      if (enterTimerRef.current) window.clearTimeout(enterTimerRef.current);
       if (leaveRafRef.current) cancelAnimationFrame(leaveRafRef.current);
       tiltEngine.cancel();
-      shell.classList.remove("entering");
     };
   }, [
     enableTilt,
@@ -311,6 +458,8 @@ function ProfileCardComponent({
     handlePointerMove,
     handlePointerEnter,
     handlePointerLeave,
+    handlePointerDown,
+    handlePointerUp,
     handleDeviceOrientation,
   ]);
 
@@ -326,70 +475,76 @@ function ProfileCardComponent({
     [iconUrl, grainUrl, innerGradient, behindGlowColor, behindGlowSize],
   );
 
-  const handleContactClick = useCallback(() => onContactClick?.(), [onContactClick]);
   const hasAvatar = Boolean(avatarUrl);
+  const inner = (
+    <section className={`pc-card ${hasAvatar ? "" : "pc-no-avatar"}`}>
+      <div className="pc-inside">
+        <div className="pc-shine" />
+        <div className="pc-glare" />
+        <div className="pc-content pc-avatar-content">
+          {hasAvatar && (
+            // eslint-disable-next-line @next/next/no-img-element
+            <img
+              className="avatar"
+              src={avatarUrl as string}
+              alt={`${name} avatar`}
+              loading="lazy"
+              onError={(e) => {
+                (e.target as HTMLImageElement).style.display = "none";
+              }}
+            />
+          )}
+        </div>
+        <div className="pc-content pc-text-content">
+          <div className="pc-details">
+            <h3>{name}</h3>
+            {title && <p>{title}</p>}
+          </div>
+        </div>
+        {showUserInfo && (
+          <div className="pc-content pc-userinfo-content">
+            <div className="pc-user-info">
+              <div className="pc-user-details">
+                {hasAvatar && (
+                  <div className="pc-mini-avatar">
+                    {/* eslint-disable-next-line @next/next/no-img-element */}
+                    <img
+                      src={(miniAvatarUrl || avatarUrl) as string}
+                      alt=""
+                      loading="lazy"
+                    />
+                  </div>
+                )}
+                <div className="pc-user-text">
+                  <div className="pc-handle">@{handle}</div>
+                  {status && <div className="pc-status">{status}</div>}
+                </div>
+              </div>
+              <span className="pc-contact-btn">{contactText}</span>
+            </div>
+          </div>
+        )}
+      </div>
+    </section>
+  );
 
   return (
     <div ref={wrapRef} className={`pc-card-wrapper ${className}`.trim()} style={cardStyle}>
       {behindGlowEnabled && <div className="pc-behind" />}
       <div ref={shellRef} className="pc-card-shell">
-        <section className={`pc-card ${hasAvatar ? "" : "pc-no-avatar"}`}>
-          <div className="pc-inside">
-            <div className="pc-shine" />
-            <div className="pc-glare" />
-            <div className="pc-content pc-avatar-content">
-              {hasAvatar && (
-                // eslint-disable-next-line @next/next/no-img-element
-                <img
-                  className="avatar"
-                  src={avatarUrl as string}
-                  alt={`${name} avatar`}
-                  loading="lazy"
-                  onError={(e) => {
-                    (e.target as HTMLImageElement).style.display = "none";
-                  }}
-                />
-              )}
-            </div>
-            <div className="pc-content pc-text-content">
-              <div className="pc-details">
-                <h3>{name}</h3>
-                {title && <p>{title}</p>}
-              </div>
-            </div>
-            {showUserInfo && (
-              <div className="pc-content pc-userinfo-content">
-                <div className="pc-user-info">
-                  <div className="pc-user-details">
-                    {hasAvatar && (
-                      <div className="pc-mini-avatar">
-                        {/* eslint-disable-next-line @next/next/no-img-element */}
-                        <img
-                          src={(miniAvatarUrl || avatarUrl) as string}
-                          alt={`${name} mini avatar`}
-                          loading="lazy"
-                        />
-                      </div>
-                    )}
-                    <div className="pc-user-text">
-                      <div className="pc-handle">@{handle}</div>
-                      {status && <div className="pc-status">{status}</div>}
-                    </div>
-                  </div>
-                  <button
-                    className="pc-contact-btn"
-                    onClick={handleContactClick}
-                    style={{ pointerEvents: "auto" }}
-                    type="button"
-                    aria-label={`${contactText}: ${name}`}
-                  >
-                    {contactText}
-                  </button>
-                </div>
-              </div>
-            )}
+        {href ? (
+          <Link href={href} className="pc-card-link" onClick={handleClick} aria-label={`${contactText}: ${name}`}>
+            {inner}
+          </Link>
+        ) : (
+          <div
+            className="pc-card-link"
+            onClick={() => onContactClick?.()}
+            role={onContactClick ? "button" : undefined}
+          >
+            {inner}
           </div>
-        </section>
+        )}
       </div>
     </div>
   );

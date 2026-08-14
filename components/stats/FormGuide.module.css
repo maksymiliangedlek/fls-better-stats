@@ -43,25 +43,3 @@
   background: linear-gradient(180deg, #ff7a6e, #c0392b);
   box-shadow: 0 0 8px rgba(231, 76, 60, 0.9), 0 0 16px rgba(231, 76, 60, 0.5);
 }
-
-@media (prefers-reduced-motion: no-preference) {
-  .led {
-    animation: ledPulse 3s ease-in-out infinite;
-  }
-  .led:nth-child(2n) {
-    animation-delay: 0.4s;
-  }
-  .led:nth-child(3n) {
-    animation-delay: 0.8s;
-  }
-}
-
-@keyframes ledPulse {
-  0%,
-  100% {
-    filter: brightness(1);
-  }
-  50% {
-    filter: brightness(1.25);
-  }
-}

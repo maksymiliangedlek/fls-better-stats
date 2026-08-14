@@ -33,8 +33,8 @@ export function CompareRadar({
         <PolarGrid stroke={CHART.grid} />
         <PolarAngleAxis dataKey="axis" tick={{ fontSize: 11, fill: CHART.axis }} />
         <PolarRadiusAxis domain={[0, 100]} tick={{ fontSize: 10, fill: CHART.axis }} angle={90} />
-        <Radar name={nameA} dataKey={nameA} stroke={CHART.gold} fill={CHART.gold} fillOpacity={0.35} />
-        <Radar name={nameB} dataKey={nameB} stroke={CHART.navy} fill={CHART.navy} fillOpacity={0.25} />
+        <Radar name={nameA} dataKey={nameA} stroke={CHART.gold} fill={CHART.gold} fillOpacity={0.35} isAnimationActive={false} />
+        <Radar name={nameB} dataKey={nameB} stroke={CHART.navy} fill={CHART.navy} fillOpacity={0.25} isAnimationActive={false} />
         <Legend wrapperStyle={{ fontSize: 12 }} />
         <Tooltip contentStyle={tooltipStyle} />
       </RadarChart>

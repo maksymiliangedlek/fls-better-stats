@@ -75,9 +75,11 @@ function MenuItem({
   const marqueeRef = useRef<HTMLDivElement>(null);
   const marqueeInnerRef = useRef<HTMLDivElement>(null);
   const animationRef = useRef<gsap.core.Tween | null>(null);
+  const timelineRef = useRef<gsap.core.Timeline | null>(null);
+  const enterEdgeRef = useRef<"top" | "bottom">("bottom");
   const [repetitions, setRepetitions] = useState(4);
 
-  const animationDefaults = { duration: 0.6, ease: "expo" };
+  const animationDefaults = { duration: 0.4, ease: "power3.out", overwrite: "auto" as const };
   const isInternal = link.startsWith("/");
 
   const distMetric = (x: number, y: number, x2: number, y2: number) => {
@@ -123,6 +125,7 @@ function MenuItem({
     return () => {
       clearTimeout(timer);
       animationRef.current?.kill();
+      timelineRef.current?.kill();
     };
   }, [text, image, repetitions, speed]);
 
@@ -130,18 +133,20 @@ function MenuItem({
     if (!itemRef.current || !marqueeRef.current || !marqueeInnerRef.current) return;
     const rect = itemRef.current.getBoundingClientRect();
     const edge = findClosestEdge(ev.clientX - rect.left, ev.clientY - rect.top, rect.width, rect.height);
-    gsap
+    enterEdgeRef.current = edge;
+    timelineRef.current?.kill();
+    timelineRef.current = gsap
       .timeline({ defaults: animationDefaults })
       .set(marqueeRef.current, { y: edge === "top" ? "-101%" : "101%" }, 0)
       .set(marqueeInnerRef.current, { y: edge === "top" ? "101%" : "-101%" }, 0)
       .to([marqueeRef.current, marqueeInnerRef.current], { y: "0%" }, 0);
   };
 
-  const handleMouseLeave = (ev: React.MouseEvent) => {
-    if (!itemRef.current || !marqueeRef.current || !marqueeInnerRef.current) return;
-    const rect = itemRef.current.getBoundingClientRect();
-    const edge = findClosestEdge(ev.clientX - rect.left, ev.clientY - rect.top, rect.width, rect.height);
-    gsap
+  const handleMouseLeave = () => {
+    if (!marqueeRef.current || !marqueeInnerRef.current) return;
+    const edge = enterEdgeRef.current;
+    timelineRef.current?.kill();
+    timelineRef.current = gsap
       .timeline({ defaults: animationDefaults })
       .to(marqueeRef.current, { y: edge === "top" ? "-101%" : "101%" }, 0)
       .to(marqueeInnerRef.current, { y: edge === "top" ? "101%" : "-101%" }, 0);

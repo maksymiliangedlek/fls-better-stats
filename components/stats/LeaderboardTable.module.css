@@ -24,6 +24,7 @@
 }
 
 .tab {
+  position: relative;
   border: none;
   background: transparent;
   padding: 0.45rem 0.9rem;
@@ -31,11 +32,27 @@
   font-weight: 600;
   font-size: 0.85rem;
   color: var(--c-muted);
-  transition: all 150ms ease;
+}
+
+.tab:active {
+  transform: scale(var(--press-scale));
+  transition: transform 100ms ease-out;
+}
+
+.tabPill {
+  position: absolute;
+  inset: 0;
+  border-radius: 8px;
+  background: var(--c-navy);
+  z-index: 0;
+}
+
+.tabLabel {
+  position: relative;
+  z-index: 1;
 }
 
 .tabActive {
-  background: var(--c-navy);
   color: #fff;
 }
 
@@ -119,16 +136,20 @@
   gap: 4px;
   border: none;
   background: transparent;
-  font-weight: 700;
+  font-weight: 650;
   font-size: 0.8rem;
-  text-transform: uppercase;
-  letter-spacing: 0.04em;
+  letter-spacing: 0;
   color: var(--c-muted);
   margin-left: auto;
 }
 
 .sortBtn:hover {
   color: var(--c-navy);
+}
+
+.sortBtn:active {
+  transform: scale(var(--press-scale));
+  transition: transform 100ms ease-out;
 }
 
 .sortActive {

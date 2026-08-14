@@ -1,8 +1,12 @@
 import Link from "next/link";
-import type { ReactNode } from "react";
+import type { ButtonHTMLAttributes, ReactNode } from "react";
 import styles from "./Button.module.css";
 
 type Variant = "gold" | "ghost" | "navy";
+
+function classNameFor(variant: Variant) {
+  return `${styles.btn} ${styles[variant]}`;
+}
 
 export function LinkButton({
   href,
@@ -14,8 +18,24 @@ export function LinkButton({
   variant?: Variant;
 }) {
   return (
-    <Link href={href} className={`${styles.btn} ${styles[variant]}`}>
+    <Link href={href} className={classNameFor(variant)}>
       {children}
     </Link>
+  );
+}
+
+export function Button({
+  children,
+  variant = "navy",
+  className = "",
+  ...rest
+}: ButtonHTMLAttributes<HTMLButtonElement> & {
+  variant?: Variant;
+  children: ReactNode;
+}) {
+  return (
+    <button className={`${classNameFor(variant)} ${className}`.trim()} {...rest}>
+      {children}
+    </button>
   );
 }

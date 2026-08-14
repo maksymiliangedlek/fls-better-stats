@@ -6,15 +6,15 @@
 
 .label {
   display: block;
-  font-size: 0.72rem;
-  font-weight: 700;
-  text-transform: uppercase;
-  letter-spacing: 0.08em;
+  font-size: 0.78rem;
+  font-weight: 650;
+  letter-spacing: 0;
   color: var(--c-muted);
   margin-bottom: 0.4rem;
 }
 
 .trigger {
+  position: relative;
   width: 100%;
   display: flex;
   align-items: center;
@@ -22,11 +22,17 @@
   gap: 0.5rem;
   padding: 0.75rem 1rem;
   background: var(--surface);
-  border: 2px solid var(--c-line);
+  border: 1.5px solid var(--c-line);
   border-radius: 12px;
   font-size: 1rem;
   text-align: left;
-  transition: border-color 150ms ease;
+  transition: border-color var(--duration-spring) var(--ease-spring);
+}
+
+.trigger::before {
+  content: "";
+  position: absolute;
+  inset: -10px;
 }
 
 .gold .trigger {
@@ -40,8 +46,13 @@
   border-color: var(--c-navy);
 }
 
+.trigger:active {
+  transform: scale(var(--press-scale));
+  transition: transform 100ms ease-out;
+}
+
 .selectedName {
-  font-weight: 700;
+  font-weight: 650;
   color: var(--c-navy);
 }
 
@@ -97,13 +108,18 @@
   font-size: 0.92rem;
 }
 
-.option:hover {
+.option:hover,
+.optionFocus {
   background: var(--c-navy-050);
 }
 
+.option:active {
+  transform: scale(var(--press-scale));
+  transition: transform 100ms ease-out;
+}
+
 .optionActive {
-  background: var(--c-navy-050);
-  font-weight: 700;
+  font-weight: 650;
 }
 
 .optMeta {

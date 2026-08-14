@@ -36,15 +36,30 @@ export default async function PlayerDetailPage({
   const s = profile.summary;
   const age = ageFrom(s.dateOfBirth);
 
-  const totals = [
-    { label: "Mecze", value: s.games },
-    { label: "Bramki", value: s.goals },
-    { label: "Asysty", value: s.assists },
-    { label: "G+A", value: s.goalContributions },
-    { label: "MVP", value: s.mvp },
-    { label: "Gole/mecz", value: s.goalsPerGame.toFixed(2) },
-    { label: "Żółte", value: s.yellowCards },
-    { label: "Czerwone", value: s.redCards },
+  const groups = [
+    {
+      label: "Dorobek",
+      stats: [
+        { label: "Mecze", value: s.games },
+        { label: "Bramki", value: s.goals },
+        { label: "Asysty", value: s.assists },
+        { label: "G+A", value: s.goalContributions },
+      ],
+    },
+    {
+      label: "Forma",
+      stats: [
+        { label: "MVP", value: s.mvp },
+        { label: "Gole/mecz", value: s.goalsPerGame.toFixed(2) },
+      ],
+    },
+    {
+      label: "Dyscyplina",
+      stats: [
+        { label: "Żółte", value: s.yellowCards },
+        { label: "Czerwone", value: s.redCards },
+      ],
+    },
   ];
 
   return (
@@ -58,19 +73,28 @@ export default async function PlayerDetailPage({
             alt={s.name}
           />
           <div className={styles.identity}>
-            <Link href="/players" className={styles.back}>
-              ← Wróć do składu
-            </Link>
+            <nav className={styles.crumb} aria-label="Okruszki">
+              <Link href="/players">Skład</Link>
+              <span aria-hidden="true">/</span>
+              <span>{s.name}</span>
+            </nav>
             <h1 className={styles.name}>{s.name}</h1>
             <p className={styles.meta}>
               {age ? `${age} lat · ` : ""}
               {profile.seasons.length} sezonów w bazie
             </p>
-            <div className={styles.totals}>
-              {totals.map((t) => (
-                <div key={t.label} className={styles.stat}>
-                  <span className={styles.statValue}>{t.value}</span>
-                  <span className={styles.statLabel}>{t.label}</span>
+            <div className={styles.groups}>
+              {groups.map((g) => (
+                <div key={g.label} className={styles.group}>
+                  <span className={styles.groupLabel}>{g.label}</span>
+                  <div className={styles.totals}>
+                    {g.stats.map((t) => (
+                      <div key={t.label} className={styles.stat}>
+                        <span className={styles.statValue}>{t.value}</span>
+                        <span className={styles.statLabel}>{t.label}</span>
+                      </div>
+                    ))}
+                  </div>
                 </div>
               ))}
             </div>

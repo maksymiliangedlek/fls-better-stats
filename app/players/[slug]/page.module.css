@@ -1,6 +1,8 @@
 .header {
-  background: linear-gradient(160deg, var(--c-navy) 0%, var(--c-navy-900) 100%);
+  background: var(--material-heavy);
   color: #fff;
+  margin-top: calc(-1 * var(--header-h));
+  padding-top: var(--header-h);
 }
 
 .headerInner {
@@ -16,7 +18,7 @@
   height: 128px;
   border-radius: 24px;
   object-fit: cover;
-  border: 2px solid var(--c-gold);
+  border: 1px solid var(--material-edge);
   background: var(--c-navy-700);
   flex: none;
 }
@@ -26,31 +28,63 @@
   min-width: 240px;
 }
 
-.back {
+.crumb {
+  display: flex;
+  align-items: center;
+  gap: 0.45rem;
   font-size: 0.85rem;
-  color: rgba(255, 255, 255, 0.7);
+  color: rgba(255, 255, 255, 0.6);
 }
 
-.back:hover {
-  color: var(--c-gold-light);
+.crumb a {
+  color: rgba(255, 255, 255, 0.78);
+}
+
+.crumb a:hover {
+  color: #fff;
+}
+
+.crumb a:active {
+  transform: scale(var(--press-scale));
 }
 
 .name {
   font-size: clamp(1.8rem, 4vw, 2.75rem);
+  line-height: 1.05;
+  letter-spacing: -0.02em;
   color: #fff;
-  margin: 0.4rem 0 0.25rem;
+  margin: 0.45rem 0 0.25rem;
 }
 
 .meta {
   color: rgba(255, 255, 255, 0.7);
   font-size: 0.95rem;
+  line-height: 1.4;
+}
+
+.groups {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1.75rem 2.5rem;
+  margin-top: 1.5rem;
+}
+
+.group {
+  display: flex;
+  flex-direction: column;
+  gap: 0.65rem;
+}
+
+.groupLabel {
+  font-size: 0.78rem;
+  font-weight: 650;
+  color: rgba(255, 255, 255, 0.55);
 }
 
 .totals {
-  display: grid;
-  grid-template-columns: repeat(4, auto);
-  gap: 1.5rem 2rem;
-  margin-top: 1.5rem;
+  display: flex;
+  gap: 1.25rem 1.75rem;
+  flex-wrap: wrap;
 }
 
 .stat {
@@ -59,19 +93,19 @@
 }
 
 .statValue {
-  font-family: var(--font-display), sans-serif;
-  font-size: 1.9rem;
-  font-weight: 800;
-  line-height: 1;
-  color: var(--c-gold);
+  font-family: var(--font-display);
+  font-size: 1.7rem;
+  font-weight: 700;
+  line-height: 1.05;
+  letter-spacing: -0.02em;
+  color: #fff;
 }
 
 .statLabel {
-  font-size: 0.72rem;
-  text-transform: uppercase;
-  letter-spacing: 0.06em;
-  color: rgba(255, 255, 255, 0.65);
-  margin-top: 0.3rem;
+  font-size: 0.78rem;
+  letter-spacing: 0;
+  color: rgba(255, 255, 255, 0.62);
+  margin-top: 0.25rem;
 }
 
 .actions {
@@ -83,8 +117,9 @@
     justify-content: center;
     text-align: center;
   }
+  .crumb,
+  .groups,
   .totals {
-    grid-template-columns: repeat(2, 1fr);
-    width: 100%;
+    justify-content: center;
   }
 }
