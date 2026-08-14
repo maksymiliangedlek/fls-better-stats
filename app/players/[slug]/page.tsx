@@ -4,6 +4,7 @@ import { notFound } from "next/navigation";
 import { getPlayerDetail } from "@/lib/data/queries";
 import { PlayerCharts } from "@/components/charts/PlayerCharts";
 import { GameLogList } from "@/components/stats/GameLogList";
+import { WinRates } from "@/components/stats/WinRates";
 import { SectionShell } from "@/components/stats/SectionShell";
 import { SectionHeading } from "@/components/stats/SectionHeading";
 import { LinkButton } from "@/components/ui/Button";
@@ -123,6 +124,13 @@ export default async function PlayerDetailPage({
         <SectionHeading eyebrow="Analiza" title="Wykresy" />
         <PlayerCharts stats={stats} />
       </section>
+
+      {stats.winRates.played.games > 0 && (
+        <section className="section container">
+          <SectionHeading eyebrow="Skuteczność" title="Win ratio" />
+          <WinRates rates={stats.winRates} />
+        </section>
+      )}
 
       {profile.games.length > 0 && (
         <section className="section container">

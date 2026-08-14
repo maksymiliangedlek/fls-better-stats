@@ -1,4 +1,5 @@
 import { TEAM_NAME } from "../fls/config";
+import { buildWinRates, type PlayerWinRates } from "./winrate";
 import type { GameLog, PlayerProfile } from "../types/player";
 
 export interface FormPoint {
@@ -36,6 +37,7 @@ export interface PlayerStats {
   rollingForm10: RollingPoint[];
   cumulativeGoals: CumulativePoint[];
   seasonSplits: SeasonSplit[];
+  winRates: PlayerWinRates;
 }
 
 function countEvent(events: string[], name: string): number {
@@ -100,5 +102,6 @@ export function buildPlayerStats(profile: PlayerProfile): PlayerStats {
     rollingForm10: rolling(form, 10),
     cumulativeGoals: buildCumulativeGoals(form),
     seasonSplits: buildSeasonSplits(profile),
+    winRates: buildWinRates(profile),
   };
 }
