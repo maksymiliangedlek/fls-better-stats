@@ -3,6 +3,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { getPlayerDetail } from "@/lib/data/queries";
 import { PlayerCharts } from "@/components/charts/PlayerCharts";
+import { ProfileEntranceSound } from "@/components/effects/ProfileEntranceSound";
 import { GameLogList } from "@/components/stats/GameLogList";
 import { WinRates } from "@/components/stats/WinRates";
 import { SectionShell } from "@/components/stats/SectionShell";
@@ -65,6 +66,7 @@ export default async function PlayerDetailPage({
 
   return (
     <>
+      <ProfileEntranceSound slug={profile.slug} />
       <section className={styles.header}>
         <div className={`container ${styles.headerInner}`}>
           {/* eslint-disable-next-line @next/next/no-img-element */}
