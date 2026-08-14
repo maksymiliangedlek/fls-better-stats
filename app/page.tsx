@@ -8,8 +8,7 @@ import { ProgressMeter } from "@/components/stats/ProgressMeter";
 import { ProgressBar } from "@/components/stats/ProgressBar";
 import { Sparkline } from "@/components/charts/Sparkline";
 import { LinkButton } from "@/components/ui/Button";
-import { Crest } from "@/components/branding/Crest";
-import { FlowingMenuSection } from "@/components/effects/FlowingMenuSection";
+import { HomeLanding } from "@/components/branding/HomeLanding";
 import { BootIcon, BalanceIcon, TargetIcon, MatchBallIcon } from "@/components/ui/icons";
 import styles from "./page.module.css";
 
@@ -17,7 +16,7 @@ export const dynamic = "force-dynamic";
 
 export default async function Home() {
   const { data } = await getTeamOverview();
-  const { team, record, rosterSize, topScorers, recentMatches, goalsTimeline } = data;
+  const { record, rosterSize, topScorers, recentMatches, goalsTimeline } = data;
 
   const pointsTarget = record ? Math.max(30, Math.ceil((record.points + 5) / 5) * 5) : 30;
   const gdRange = record
@@ -27,18 +26,7 @@ export default async function Home() {
 
   return (
     <>
-      <section className={styles.landing}>
-        <div className={styles.brand}>
-          <Crest size={120} priority />
-          <h1 className={styles.title}>OGNIWO BIELANY</h1>
-          <p className={styles.season}>
-            {team?.league ?? "FLS Kraków"} · {team?.season ?? "Sezon"}
-          </p>
-        </div>
-        <div className={styles.menu}>
-          <FlowingMenuSection fill />
-        </div>
-      </section>
+      <HomeLanding />
 
       {record && (
         <section className="section container">

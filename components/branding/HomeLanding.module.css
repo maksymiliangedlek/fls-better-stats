@@ -1,0 +1,81 @@
+.landing {
+  min-height: 100svh;
+  display: flex;
+  flex-direction: column;
+  background: #fff;
+}
+
+.brand {
+  flex: 0 0 40%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 1.25rem;
+  padding: clamp(1.25rem, 3vh, 2rem) 1.25rem;
+  text-align: center;
+  background: #fff;
+  color: var(--c-navy);
+}
+
+.emblem {
+  position: relative;
+  width: 168px;
+  height: 168px;
+}
+
+.duck {
+  position: absolute;
+  inset: 12%;
+  width: 76%;
+  height: 76%;
+  object-fit: contain;
+  z-index: 2;
+  pointer-events: none;
+}
+
+.crest {
+  position: relative;
+  z-index: 1;
+  width: 168px;
+  height: 168px;
+}
+
+.crest :global(img) {
+  width: 100% !important;
+  height: 100% !important;
+}
+
+.title {
+  margin: 0;
+  font-size: clamp(1.35rem, 4.2vw, 2.35rem);
+  font-weight: 700;
+  letter-spacing: 0.18em;
+  line-height: 1.15;
+  color: var(--c-navy);
+}
+
+.menu {
+  flex: 1;
+  min-height: 56vh;
+  display: flex;
+  flex-direction: column;
+  background: var(--c-navy);
+}
+
+@media (max-width: 639px) {
+  .title {
+    letter-spacing: 0.1em;
+  }
+  .emblem,
+  .crest {
+    width: 132px;
+    height: 132px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .duck {
+    display: none;
+  }
+}
