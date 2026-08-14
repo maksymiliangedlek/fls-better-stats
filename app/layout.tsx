@@ -1,8 +1,16 @@
 import type { Metadata } from "next";
 import type { ReactNode } from "react";
+import { Anton } from "next/font/google";
 import "../styles/globals.css";
 import { SiteHeader } from "@/components/branding/SiteHeader";
 import { SiteFooter } from "@/components/branding/SiteFooter";
+
+const monument = Anton({
+  subsets: ["latin-ext"],
+  weight: "400",
+  display: "swap",
+  variable: "--font-monument",
+});
 
 export const metadata: Metadata = {
   title: "Ogniwo Bielany — Statystyki",
@@ -11,7 +19,7 @@ export const metadata: Metadata = {
 
 export default function RootLayout({ children }: { children: ReactNode }) {
   return (
-    <html lang="pl">
+    <html lang="pl" className={monument.variable}>
       <body>
         <div
           style={{

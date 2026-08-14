@@ -1,9 +1,17 @@
 import Image from "next/image";
 
-export function Crest({ size = 40, priority = false }: { size?: number; priority?: boolean }) {
+export function Crest({
+  size = 40,
+  priority = false,
+  src = "/crest.png",
+}: {
+  size?: number;
+  priority?: boolean;
+  src?: string;
+}) {
   return (
     <Image
-      src="/crest.png"
+      src={src}
       alt="Herb Ogniwo Bielany"
       width={size}
       height={size}

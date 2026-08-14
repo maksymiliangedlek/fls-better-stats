@@ -9,7 +9,7 @@ import styles from "./HomeLanding.module.css";
 
 /** The duck's last frame equals the crest's duck, so the swap is a hard cut. */
 const instant = { duration: 0 };
-const titleSpring = { type: "spring" as const, bounce: 0, duration: 0.5 };
+const titleReveal = { type: "spring" as const, bounce: 0, duration: 0.75 };
 
 export function HomeLanding() {
   const reduced = usePrefersReducedMotion();
@@ -24,6 +24,7 @@ export function HomeLanding() {
   const finishFly = () => {
     setFlyDone(true);
     setCrestIn(true);
+    setTitleIn(true);
   };
 
   useLayoutEffect(() => {
@@ -62,26 +63,24 @@ export function HomeLanding() {
       )}
       <div className={styles.brand}>
         <div ref={stageRef} className={styles.stage}>
-          <motion.div
-            className={styles.crest}
-            initial={reduced ? false : { opacity: 0 }}
-            animate={crestIn ? { opacity: 1 } : { opacity: 0 }}
-            transition={instant}
-            onAnimationComplete={() => {
-              if (crestIn) setTitleIn(true);
-            }}
-          >
-            <Crest size={118} priority />
-          </motion.div>
+          {/* Empty ring waits for the duck, then the full crest takes over. */}
+          <div className={styles.crest} data-hidden={crestIn || undefined}>
+            <Crest size={118} src="/crest-ring.png" priority />
+          </div>
+          <div className={styles.crest} data-hidden={!crestIn || undefined}>
+            <Crest size={118} src="/crest.png" priority />
+          </div>
         </div>
-        <motion.h1
-          className={styles.title}
-          initial={reduced ? false : { opacity: 0, y: 32 }}
-          animate={titleIn ? { opacity: 1, y: 0 } : { opacity: 0, y: 32 }}
-          transition={reduced ? { duration: 0.2 } : titleSpring}
-        >
-          OGNIWO BIELANY
-        </motion.h1>
+        <div className={styles.titleMask}>
+          <motion.h1
+            className={styles.title}
+            initial={reduced ? false : { y: "115%" }}
+            animate={titleIn ? { y: "0%" } : { y: "115%" }}
+            transition={reduced ? { duration: 0 } : titleReveal}
+          >
+            OGNIWO BIELANY
+          </motion.h1>
+        </div>
       </div>
       <div className={styles.menu}>
         <FlowingMenuSection fill />

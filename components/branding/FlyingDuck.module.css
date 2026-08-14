@@ -84,10 +84,11 @@
     transform: rotate(18deg);
   }
   90% {
-    transform: rotate(-24deg);
+    transform: rotate(-44deg);
   }
+  /* Crest pose — matched to the duck inside crest.png. */
   100% {
-    transform: rotate(-28deg);
+    transform: rotate(-49deg);
   }
 }
 
@@ -117,10 +118,11 @@
     transform: rotate(14deg);
   }
   92% {
-    transform: rotate(-15deg);
+    transform: rotate(12deg);
   }
+  /* Crest pose — matched to the duck inside crest.png. */
   100% {
-    transform: rotate(-18deg);
+    transform: rotate(16deg);
   }
 }
 
