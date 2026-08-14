@@ -479,6 +479,7 @@ function ProfileCardComponent({
   const inner = (
     <section className={`pc-card ${hasAvatar ? "" : "pc-no-avatar"}`}>
       <div className="pc-inside">
+        <div className="pc-ducks" aria-hidden="true" />
         <div className="pc-shine" />
         <div className="pc-glare" />
         <div className="pc-content pc-avatar-content">

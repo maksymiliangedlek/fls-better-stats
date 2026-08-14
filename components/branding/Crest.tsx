@@ -8,7 +8,7 @@ export function Crest({ size = 40, priority = false }: { size?: number; priority
       width={size}
       height={size}
       priority={priority}
-      style={{ objectFit: "contain" }}
+      style={{ objectFit: "contain", background: "transparent" }}
     />
   );
 }

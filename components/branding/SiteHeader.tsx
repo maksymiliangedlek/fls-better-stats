@@ -13,19 +13,19 @@ const NAV = [
 export function SiteHeader() {
   const pathname = usePathname();
 
+  if (pathname === "/") return null;
+
   const isActive = (href: string) =>
     href === "/" ? pathname === "/" : pathname.startsWith(href);
 
   return (
-    <header className={styles.header}>
-      <div className={`container ${styles.inner}`}>
-        <Link href="/" className={styles.brand}>
-          <Crest size={40} priority />
-          <span className={styles.wordmark}>
-            Ogniwo <span className={styles.gold}>Bielany</span>
-          </span>
+    <>
+      <div className={styles.spacer} aria-hidden="true" />
+      <header className={styles.island}>
+        <Link href="/" className={styles.crest} aria-label="Ogniwo Bielany — drużyna">
+          <Crest size={28} priority />
         </Link>
-        <nav className={styles.nav}>
+        <nav className={styles.nav} aria-label="Główne">
           {NAV.map((item) => (
             <Link
               key={item.href}
@@ -36,7 +36,7 @@ export function SiteHeader() {
             </Link>
           ))}
         </nav>
-      </div>
-    </header>
+      </header>
+    </>
   );
 }

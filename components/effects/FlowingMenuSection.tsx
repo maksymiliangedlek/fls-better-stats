@@ -6,14 +6,14 @@ import styles from "./FlowingMenuSection.module.css";
 const FlowingMenu = dynamic(() => import("./flowing-menu/FlowingMenu"), { ssr: false });
 
 const ITEMS: FlowingMenuItem[] = [
-  { link: "/players", text: "Skład", image: "/crest.png" },
-  { link: "/compare", text: "Porównaj", image: "/crest.png" },
-  { link: "#terminarz", text: "Terminarz", image: "/crest.png" },
+  { link: "/players", text: "Skład", image: "/duck.png" },
+  { link: "/compare", text: "Porównaj", image: "/duck.png" },
+  { link: "#terminarz", text: "Terminarz", image: "/duck.png" },
 ];
 
-export function FlowingMenuSection() {
+export function FlowingMenuSection({ fill = false }: { fill?: boolean }) {
   return (
-    <div className={styles.wrap}>
+    <div className={`${styles.wrap} ${fill ? styles.fill : ""}`}>
       <FlowingMenu
         items={ITEMS}
         speed={14}

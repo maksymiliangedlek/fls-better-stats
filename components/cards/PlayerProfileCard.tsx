@@ -23,8 +23,8 @@ export function PlayerProfileCard({
       showUserInfo
       enableTilt={enableTilt}
       href={`/players/${player.slug}`}
-      behindGlowColor="rgba(201, 162, 39, 0.45)"
-      innerGradient="linear-gradient(145deg, rgba(12,69,99,0.9) 0%, rgba(201,162,39,0.35) 100%)"
+      behindGlowColor="rgba(64, 210, 230, 0.45)"
+      innerGradient="linear-gradient(145deg, rgba(6,20,32,0.96) 0%, rgba(12,69,99,0.85) 55%, rgba(32,140,160,0.35) 100%)"
     />
   );
 }

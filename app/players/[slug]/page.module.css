@@ -1,8 +1,6 @@
 .header {
   background: var(--material-heavy);
   color: #fff;
-  margin-top: calc(-1 * var(--header-h));
-  padding-top: var(--header-h);
 }
 
 .headerInner {

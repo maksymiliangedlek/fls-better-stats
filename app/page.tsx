@@ -1,6 +1,4 @@
 import { getTeamOverview } from "@/lib/data/queries";
-import { RecordBadge } from "@/components/stats/RecordBadge";
-import { FormGuide } from "@/components/stats/FormGuide";
 import { StatCard } from "@/components/stats/StatCard";
 import { RosterGrid } from "@/components/roster/RosterGrid";
 import { MatchList } from "@/components/stats/MatchList";
@@ -10,10 +8,9 @@ import { ProgressMeter } from "@/components/stats/ProgressMeter";
 import { ProgressBar } from "@/components/stats/ProgressBar";
 import { Sparkline } from "@/components/charts/Sparkline";
 import { LinkButton } from "@/components/ui/Button";
-import { HeroBadge } from "@/components/branding/HeroBadge";
+import { Crest } from "@/components/branding/Crest";
 import { FlowingMenuSection } from "@/components/effects/FlowingMenuSection";
 import { BootIcon, BalanceIcon, TargetIcon, MatchBallIcon } from "@/components/ui/icons";
-import GradualBlur from "@/components/effects/gradual-blur/GradualBlur";
 import styles from "./page.module.css";
 
 export const dynamic = "force-dynamic";
@@ -30,48 +27,18 @@ export default async function Home() {
 
   return (
     <>
-      <section className={styles.hero}>
-        <div className={`container ${styles.heroInner}`}>
-          <div className={styles.heroText}>
-            <span className="eyebrow">
-              {team?.league ?? "FLS Kraków"} · {team?.season ?? "Sezon"}
-            </span>
-            <h1>
-              Ogniwo <span className={styles.gold}>Bielany</span>
-            </h1>
-            <p className={styles.lead}>
-              Statystyki, forma i porównania zawodników klubu — zaawansowana
-              analityka w jednym miejscu, na podstawie danych z rozgrywek FLS.
-            </p>
-
-            {record && (
-              <div className={styles.heroMeta}>
-                <RecordBadge record={record} />
-                <div className={styles.formRow}>
-                  <span className={styles.formLabel}>Ostatnia forma</span>
-                  <FormGuide guide={record.formGuide} max={8} />
-                </div>
-              </div>
-            )}
-
-            <div className={styles.ctaRow}>
-              <LinkButton href="/players" variant="gold">
-                Zobacz skład
-              </LinkButton>
-              <LinkButton href="/compare" variant="ghost">
-                Porównaj zawodników
-              </LinkButton>
-            </div>
-          </div>
-
-          <div className={styles.heroArt}>
-            <HeroBadge size={280} />
-          </div>
+      <section className={styles.landing}>
+        <div className={styles.brand}>
+          <Crest size={120} priority />
+          <h1 className={styles.title}>OGNIWO BIELANY</h1>
+          <p className={styles.season}>
+            {team?.league ?? "FLS Kraków"} · {team?.season ?? "Sezon"}
+          </p>
         </div>
-        <GradualBlur position="bottom" strength={2.5} height="6rem" divCount={6} curve="bezier" />
+        <div className={styles.menu}>
+          <FlowingMenuSection fill />
+        </div>
       </section>
-
-      <FlowingMenuSection />
 
       {record && (
         <section className="section container">
