@@ -1,0 +1,140 @@
+.flyer {
+  --fly: 2.2s;
+  position: absolute;
+  z-index: 6;
+  width: 118px;
+  height: 118px;
+  margin-left: -59px;
+  margin-top: -59px;
+  pointer-events: none;
+  will-change: transform;
+}
+
+/* Box matches the duck silhouette inside crest.png, so the last frame lines up. */
+.duck {
+  position: absolute;
+  left: 29.7%;
+  top: 32.6%;
+  width: 39.45%;
+  height: 28.03%;
+}
+
+.body {
+  position: absolute;
+  left: 0;
+  bottom: 6%;
+  width: 100%;
+  height: auto;
+  z-index: 2;
+}
+
+/* Each wing pivots on its own shoulder blob, buried just under the back line. */
+.wing {
+  position: absolute;
+  height: auto;
+  pointer-events: none;
+  animation-duration: var(--fly);
+  animation-timing-function: ease-in-out;
+  animation-fill-mode: forwards;
+  will-change: transform;
+}
+
+.wingFar {
+  z-index: 1;
+  left: 38.5%;
+  top: 5.1%;
+  width: 40%;
+  transform-origin: 33.8% 91.6%;
+  animation-name: flapFar;
+}
+
+.wingNear {
+  z-index: 3;
+  left: 38.4%;
+  top: 2.5%;
+  width: 44%;
+  transform-origin: 17.3% 92%;
+  animation-name: flapNear;
+}
+
+/* Fast upstroke, slower downstroke, amplitude decaying into the crest pose. */
+@keyframes flapFar {
+  0% {
+    transform: rotate(-32deg);
+  }
+  10% {
+    transform: rotate(34deg);
+  }
+  20% {
+    transform: rotate(-32deg);
+  }
+  30% {
+    transform: rotate(32deg);
+  }
+  40% {
+    transform: rotate(-31deg);
+  }
+  52% {
+    transform: rotate(28deg);
+  }
+  64% {
+    transform: rotate(-30deg);
+  }
+  78% {
+    transform: rotate(18deg);
+  }
+  90% {
+    transform: rotate(-24deg);
+  }
+  100% {
+    transform: rotate(-28deg);
+  }
+}
+
+@keyframes flapNear {
+  0% {
+    transform: rotate(-22deg);
+  }
+  14% {
+    transform: rotate(30deg);
+  }
+  24% {
+    transform: rotate(-24deg);
+  }
+  34% {
+    transform: rotate(28deg);
+  }
+  44% {
+    transform: rotate(-23deg);
+  }
+  56% {
+    transform: rotate(24deg);
+  }
+  68% {
+    transform: rotate(-22deg);
+  }
+  82% {
+    transform: rotate(14deg);
+  }
+  92% {
+    transform: rotate(-15deg);
+  }
+  100% {
+    transform: rotate(-18deg);
+  }
+}
+
+@media (max-width: 639px) {
+  .flyer {
+    width: 96px;
+    height: 96px;
+    margin-left: -48px;
+    margin-top: -48px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .flyer {
+    display: none;
+  }
+}

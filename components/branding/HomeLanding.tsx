@@ -1,52 +1,74 @@
 "use client";
-import { useState } from "react";
-import { AnimatePresence, motion } from "motion/react";
+import { useEffect, useLayoutEffect, useRef, useState } from "react";
+import { motion } from "motion/react";
 import { Crest } from "./Crest";
+import { FlyingDuck } from "./FlyingDuck";
 import { FlowingMenuSection } from "@/components/effects/FlowingMenuSection";
 import { usePrefersReducedMotion } from "@/lib/client/useMediaQuery";
 import styles from "./HomeLanding.module.css";
 
-const duckSpring = { type: "spring" as const, bounce: 0.18, duration: 0.85 };
-const crestSpring = { type: "spring" as const, bounce: 0, duration: 0.45 };
+/** The duck's last frame equals the crest's duck, so the swap is a hard cut. */
+const instant = { duration: 0 };
 const titleSpring = { type: "spring" as const, bounce: 0, duration: 0.5 };
 
 export function HomeLanding() {
   const reduced = usePrefersReducedMotion();
   const [crestIn, setCrestIn] = useState(reduced);
-  const [duckGone, setDuckGone] = useState(reduced);
   const [titleIn, setTitleIn] = useState(reduced);
+  const [flyDone, setFlyDone] = useState(reduced);
+  const landingRef = useRef<HTMLElement>(null);
+  const stageRef = useRef<HTMLDivElement>(null);
+
+  const [pin, setPin] = useState<{ x: number; y: number; startX: number } | null>(null);
+
+  const finishFly = () => {
+    setFlyDone(true);
+    setCrestIn(true);
+  };
+
+  useLayoutEffect(() => {
+    const landing = landingRef.current;
+    const stage = stageRef.current;
+    if (!landing || !stage) return;
+    const lb = landing.getBoundingClientRect();
+    const sb = stage.getBoundingClientRect();
+    const crestCenterX = sb.left + sb.width / 2;
+    setPin({
+      x: crestCenterX - lb.left,
+      y: sb.top + sb.height / 2 - lb.top,
+      // Clear the right edge by a full duck width so it enters from off-screen.
+      startX: window.innerWidth - crestCenterX + 240,
+    });
+  }, []);
+
+  useEffect(() => {
+    if (!reduced) return;
+    setFlyDone(true);
+    setCrestIn(true);
+    setTitleIn(true);
+  }, [reduced]);
 
   return (
-    <section className={styles.landing}>
+    <section ref={landingRef} className={styles.landing}>
+      {!reduced && pin && (
+        <motion.div
+          className={styles.duckFlyWrap}
+          initial={{ opacity: 1 }}
+          animate={{ opacity: flyDone ? 0 : 1 }}
+          transition={instant}
+        >
+          <FlyingDuck originX={pin.x} originY={pin.y} startX={pin.startX} onLanded={finishFly} />
+        </motion.div>
+      )}
       <div className={styles.brand}>
-        <div className={styles.emblem}>
-          <AnimatePresence>
-            {!duckGone && (
-              <motion.img
-                key="duck"
-                src="/duck.png"
-                alt=""
-                className={styles.duck}
-                initial={reduced ? false : { x: "42vw", y: "-18vh", rotate: -22, scale: 0.45, opacity: 0 }}
-                animate={{ x: 0, y: 0, rotate: 0, scale: 1, opacity: crestIn ? 0 : 1 }}
-                exit={{ opacity: 0, scale: 0.6 }}
-                transition={reduced ? { duration: 0 } : duckSpring}
-                onAnimationComplete={() => {
-                  if (!crestIn) setCrestIn(true);
-                }}
-              />
-            )}
-          </AnimatePresence>
+        <div ref={stageRef} className={styles.stage}>
           <motion.div
             className={styles.crest}
-            initial={reduced ? false : { opacity: 0, scale: 0.86 }}
-            animate={crestIn ? { opacity: 1, scale: 1 } : { opacity: 0, scale: 0.86 }}
-            transition={reduced ? { duration: 0 } : crestSpring}
+            initial={reduced ? false : { opacity: 0 }}
+            animate={crestIn ? { opacity: 1 } : { opacity: 0 }}
+            transition={instant}
             onAnimationComplete={() => {
-              if (crestIn) {
-                setDuckGone(true);
-                setTitleIn(true);
-              }
+              if (crestIn) setTitleIn(true);
             }}
           >
             <Crest size={118} priority />
