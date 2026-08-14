@@ -6,13 +6,13 @@
 }
 
 .brand {
-  flex: 0 0 40%;
+  flex: 0 0 38%;
   display: flex;
   flex-direction: column;
   align-items: center;
-  justify-content: center;
-  gap: 1.25rem;
-  padding: clamp(1.25rem, 3vh, 2rem) 1.25rem;
+  justify-content: flex-end;
+  gap: 1.75rem;
+  padding: clamp(2.5rem, 8vh, 4.5rem) 0 clamp(1.5rem, 3vh, 2.25rem);
   text-align: center;
   background: #fff;
   color: var(--c-navy);
@@ -20,8 +20,8 @@
 
 .emblem {
   position: relative;
-  width: 168px;
-  height: 168px;
+  width: 118px;
+  height: 118px;
 }
 
 .duck {
@@ -37,8 +37,8 @@
 .crest {
   position: relative;
   z-index: 1;
-  width: 168px;
-  height: 168px;
+  width: 118px;
+  height: 118px;
 }
 
 .crest :global(img) {
@@ -48,16 +48,21 @@
 
 .title {
   margin: 0;
-  font-size: clamp(1.35rem, 4.2vw, 2.35rem);
+  width: 100%;
+  padding-inline: 4vw;
+  box-sizing: border-box;
+  font-size: clamp(1.85rem, 7.2vw, 4.4rem);
   font-weight: 700;
-  letter-spacing: 0.18em;
-  line-height: 1.15;
+  letter-spacing: 0.28em;
+  line-height: 1.1;
   color: var(--c-navy);
+  text-align: center;
+  white-space: nowrap;
 }
 
 .menu {
   flex: 1;
-  min-height: 56vh;
+  min-height: 58vh;
   display: flex;
   flex-direction: column;
   background: var(--c-navy);
@@ -65,12 +70,13 @@
 
 @media (max-width: 639px) {
   .title {
-    letter-spacing: 0.1em;
+    letter-spacing: 0.14em;
+    font-size: clamp(1.45rem, 8vw, 2.1rem);
   }
   .emblem,
   .crest {
-    width: 132px;
-    height: 132px;
+    width: 96px;
+    height: 96px;
   }
 }
 

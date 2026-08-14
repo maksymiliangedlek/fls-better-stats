@@ -49,7 +49,7 @@ export function HomeLanding() {
               }
             }}
           >
-            <Crest size={168} priority />
+            <Crest size={118} priority />
           </motion.div>
         </div>
         <motion.h1
