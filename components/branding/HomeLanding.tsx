@@ -1,5 +1,6 @@
 "use client";
 import { useEffect, useLayoutEffect, useRef, useState } from "react";
+import Image from "next/image";
 import { Crest } from "./Crest";
 import { FlyingDuck } from "./FlyingDuck";
 import { FallingTitle } from "./FallingTitle";
@@ -43,6 +44,17 @@ export function HomeLanding() {
         </div>
       )}
       <div className={styles.brand}>
+        <div className={styles.bottleHit} aria-hidden="true">
+          <Image
+            className={styles.bottle}
+            src="/dzika.webp"
+            alt=""
+            width={534}
+            height={900}
+            draggable={false}
+            style={{ height: "auto" }}
+          />
+        </div>
         <div ref={stageRef} className={styles.stage}>
           <div className={styles.crest}>
             <Crest size={232} src="/crest-ring.png" priority />

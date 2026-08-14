@@ -29,12 +29,53 @@
   color: var(--c-navy);
 }
 
+/* Peeking bottle — neck anchored top-right, straightens on hover. */
+.bottleHit {
+  position: absolute;
+  top: 0;
+  right: 0;
+  z-index: 2;
+  width: clamp(4.75rem, 12vw, 7rem);
+  height: clamp(11rem, 30vh, 14rem);
+  cursor: pointer;
+}
+
+.bottleHit:hover {
+  z-index: 4;
+}
+
+.bottle {
+  position: absolute;
+  top: 12%;
+  right: -2%;
+  width: clamp(4.25rem, 9vw, 6.25rem);
+  height: auto;
+  transform: translate(4%, 10%) rotate(-34deg);
+  transform-origin: 50% 4%;
+  user-select: none;
+  filter: drop-shadow(0 8px 14px rgba(6, 39, 54, 0.14));
+  will-change: transform;
+  transition: transform var(--duration-spring) var(--ease-spring);
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .bottleHit:hover .bottle {
+    transform: translate(4%, 10%) rotate(0deg);
+  }
+}
+
 .stage {
   position: relative;
+  z-index: 3;
   width: 232px;
   height: 232px;
   display: grid;
   place-items: center;
+}
+
+.brand :global(h1) {
+  position: relative;
+  z-index: 3;
 }
 
 .crest {
@@ -66,10 +107,31 @@
     width: 176px;
     height: 176px;
   }
+
+  .bottleHit {
+    width: 4.25rem;
+    height: 9.5rem;
+  }
+
+  .bottle {
+    top: 10%;
+    width: 3.75rem;
+    transform: translate(4%, 10%) rotate(-34deg);
+  }
+
+  @media (hover: hover) and (pointer: fine) {
+    .bottleHit:hover .bottle {
+      transform: translate(4%, 10%) rotate(0deg);
+    }
+  }
 }
 
 @media (prefers-reduced-motion: reduce) {
   .duckFlyWrap {
     display: none;
+  }
+
+  .bottle {
+    transition: none;
   }
 }
