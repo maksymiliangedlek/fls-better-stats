@@ -1,5 +1,4 @@
 "use client";
-import { useRef } from "react";
 import { motion } from "motion/react";
 import styles from "./FlyingDuck.module.css";
 
@@ -12,15 +11,11 @@ export function FlyingDuck({
   originX,
   originY,
   startX,
-  onLanded,
 }: {
   originX: number;
   originY: number;
   startX: number;
-  onLanded: () => void;
 }) {
-  const done = useRef(false);
-
   return (
     <motion.div
       className={styles.flyer}
@@ -37,11 +32,6 @@ export function FlyingDuck({
         ease: flyEase,
         y: { duration: FLY_DURATION, ease: "easeInOut" },
         rotate: { duration: FLY_DURATION, ease: "easeInOut" },
-      }}
-      onAnimationComplete={() => {
-        if (done.current) return;
-        done.current = true;
-        onLanded();
       }}
       aria-hidden
     >

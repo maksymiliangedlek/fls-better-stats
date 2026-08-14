@@ -1,0 +1,30 @@
+.title {
+  margin: 0;
+  width: 100%;
+  padding-inline: 3vw;
+  box-sizing: border-box;
+  font-family: var(--font-monument), var(--font-display);
+  font-size: clamp(2.45rem, 9.2vw, 6.6rem);
+  font-weight: 400;
+  line-height: 1;
+  color: var(--c-navy);
+  text-align: center;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+
+.word {
+  display: inline-block;
+  will-change: transform, letter-spacing;
+}
+
+.space {
+  display: inline-block;
+  width: 0.42em;
+}
+
+@media (max-width: 639px) {
+  .title {
+    font-size: clamp(1.7rem, 9.6vw, 2.8rem);
+  }
+}
