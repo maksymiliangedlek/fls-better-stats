@@ -10,12 +10,12 @@ import {
   YAxis,
 } from "recharts";
 import type { SeasonSplit } from "@/lib/stats/form";
-import { seasonLabel } from "@/lib/client/format";
+import { seasonLabel, compareSeasons } from "@/lib/client/format";
 import { CHART, tooltipStyle } from "./chartTheme";
 
 export function SeasonBars({ data }: { data: SeasonSplit[] }) {
   const rows = [...data]
-    .sort((a, b) => a.season.localeCompare(b.season))
+    .sort((a, b) => compareSeasons(a.season, b.season))
     .map((s) => ({ ...s, label: seasonLabel(s.season) }));
 
   return (

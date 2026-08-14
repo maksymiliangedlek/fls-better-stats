@@ -8,8 +8,8 @@ import { LinkButton } from "@/components/ui/Button";
 export const dynamic = "force-dynamic";
 
 export const metadata: Metadata = {
-  title: "Skład — Ogniwo Bielany",
-  description: "Pełny skład i ranking zawodników Ogniwo Bielany.",
+  title: "Zawodnicy — Ogniwo Bielany",
+  description: "Zawodnicy i ranking Ogniwo Bielany.",
 };
 
 export default async function PlayersPage() {
@@ -20,7 +20,7 @@ export default async function PlayersPage() {
       <section className="section container">
         <SectionHeading
           eyebrow="Klub"
-          title="Skład"
+          title="Zawodnicy"
           action={<LinkButton href="/compare" variant="navy">Porównaj zawodników</LinkButton>}
         />
         {data.players.length > 0 ? (

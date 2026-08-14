@@ -19,6 +19,7 @@ EVENT_TYPE_NAMES = {
     "2": "Asysta",
     "3": "Żółta kartka",
     "4": "Czerwona kartka",
+    "7": "Puszczona bramka",
 }
 
 

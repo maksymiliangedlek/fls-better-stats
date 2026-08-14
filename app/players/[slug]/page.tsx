@@ -74,7 +74,7 @@ export default async function PlayerDetailPage({
           />
           <div className={styles.identity}>
             <nav className={styles.crumb} aria-label="Okruszki">
-              <Link href="/players">Skład</Link>
+              <Link href="/players">Zawodnicy</Link>
               <span aria-hidden="true">/</span>
               <span>{s.name}</span>
             </nav>
@@ -104,6 +104,18 @@ export default async function PlayerDetailPage({
               </LinkButton>
             </div>
           </div>
+          {(s.achievements?.length ?? 0) > 0 && (
+            <aside className={styles.achievements} aria-label="Osiągnięcia">
+              <span className={styles.achievementsLabel}>Osiągnięcia</span>
+              <ul className={styles.achievementList}>
+                {(s.achievements ?? []).map((item) => (
+                  <li key={item} className={styles.achievement}>
+                    {item}
+                  </li>
+                ))}
+              </ul>
+            </aside>
+          )}
         </div>
       </section>
 

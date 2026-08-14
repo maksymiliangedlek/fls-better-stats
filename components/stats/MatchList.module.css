@@ -8,7 +8,7 @@
 
 .row {
   display: grid;
-  grid-template-columns: 120px 1fr auto;
+  grid-template-columns: 132px 1fr auto;
   align-items: center;
   gap: 1rem;
   padding: 0.85rem 1rem;
@@ -19,9 +19,23 @@
   border-bottom: none;
 }
 
+.when {
+  display: flex;
+  flex-direction: column;
+  gap: 0.15rem;
+}
+
 .date {
   font-size: 0.82rem;
   color: var(--c-muted);
+}
+
+.time {
+  font-size: 0.92rem;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+  color: var(--c-navy);
+  letter-spacing: 0.02em;
 }
 
 .teams {
@@ -75,7 +89,7 @@
     grid-template-columns: 1fr auto;
     grid-template-areas:
       "teams pill"
-      "date date";
+      "when when";
     gap: 0.4rem 0.75rem;
   }
   .teams {
@@ -84,7 +98,10 @@
   .pill {
     grid-area: pill;
   }
-  .date {
-    grid-area: date;
+  .when {
+    grid-area: when;
+    flex-direction: row;
+    align-items: baseline;
+    gap: 0.5rem;
   }
 }

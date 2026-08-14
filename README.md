@@ -13,19 +13,23 @@ and API**. The response shapes below are designed to be chart-ready.
 - **Scraper** in `lib/fls/` — ports `main.py` (buildId, Apollo resolver, player/team parsers)
 - **Stats engine** in `lib/stats/` — form, leaderboards, team record, H2H compare
 - **Cache** in `lib/cache/` — Upstash Redis in prod, filesystem `.cache/` locally (auto-selected)
-- **Vercel Cron** — chunked sync (`vercel.json` → `/api/cron/sync`)
+- **Vercel Cron** — daily sync on Hobby (`vercel.json` → `/api/cron/sync`)
 
 ## How the data flows
 
 ```
 FLS  ──scrape──▶  lib/fls  ──parse──▶  Ogniwo-filtered profiles
-                                          │
-                                     lib/cache (Redis / .cache)
-                                          │
-                              lib/stats derives cool stats
+                ▲                         │
+                │                    lib/cache (Redis / .cache)
+     team page on demand                  │
+     (homepage / team API)     lib/stats derives cool stats
                                           │
                                    /api/* route handlers ──▶ frontend
 ```
+
+Match **results and upcoming fixtures** come from Ogniwo team pages on FLS
+(current Liga B / jesień 2026, plus nearby seasons probed daily). **Player stats**
+refresh on the daily cron (whole roster).
 
 ### Roster discovery (fast, Ogniwo-only)
 
@@ -61,10 +65,15 @@ npm run fetch-player -- --fixture             # offline, from fixtures/
 2. Add an **Upstash Redis** integration (Marketplace) — it sets
    `UPSTASH_REDIS_REST_URL` and `UPSTASH_REDIS_REST_TOKEN`.
 3. (Optional) set `CRON_SECRET` and `SYNC_SECRET` env vars to protect the sync endpoints.
-4. Deploy. The cron in `vercel.json` runs `/api/cron/sync` every 15 min:
+4. Deploy. The cron in `vercel.json` runs `/api/cron/sync` **once per day** (Vercel Hobby limit):
+   - scrapes Ogniwo team pages for the current season and nearby leagues/seasons
    - first run **discovers** the roster and caches all profiles
-   - later runs refresh player profiles in chunks (`PLAYERS_PER_SYNC`)
-5. Kick off the first sync immediately with `POST /api/sync` (or wait for cron).
+   - later runs refresh the whole roster and pick up new fixtures
+5. Kick off the first sync immediately with `POST /api/sync` (do not wait for cron).
+
+After that, new matches (e.g. Liga B jesień 2026) appear on the next daily cron
+without anyone opening the site. Visiting the homepage still refreshes the current
+team page if the cache is older than `TEAM_LIVE_MAX_AGE_MS`.
 
 ## Configuration
 
@@ -73,8 +82,10 @@ npm run fetch-player -- --fixture             # offline, from fixtures/
 | Constant | Default | Meaning |
 |---|---|---|
 | `TEAM_NAME` / `TEAM_SLUG` | `Ogniwo Bielany` / `ogniwo-bielany` | Target team |
-| `CURRENT_LEAGUE` / `CURRENT_SEASON` | `liga-c` / `wiosna-2026` | Seed competition for discovery + team page |
-| `PLAYERS_PER_SYNC` | `4` | Profiles refreshed per cron run |
+| `CURRENT_LEAGUE` / `CURRENT_SEASON` | `liga-b` / `jesien-2026` | Seed + preferred live team page |
+| `PLAYERS_PER_SYNC` | `50` | Profiles refreshed per daily cron (whole roster) |
+| `TEAM_LIVE_MAX_AGE_MS` | 1 min | Skip live team fetch if cache is newer |
+| `LIVE_TEAM_TIMEOUT_MS` | 12s | Timeout for on-demand team-page fetches |
 | `STALE_AFTER_MS` | 24h | When `meta.stale` flips to `true` |
 
 ## API reference

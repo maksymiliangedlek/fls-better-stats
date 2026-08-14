@@ -1,10 +1,15 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { CURRENT_LEAGUE, CURRENT_SEASON, TEAM_NAME, TEAM_SLUG } from "./config";
+import { parseGameDateTime } from "./datetime";
 import { resolve, type NextDataResponse } from "./resolver";
 import type { TeamData, TeamMatch } from "../types/team";
 
 /** Parse the team page: team info + all Game:* entries in the Apollo cache. */
-export function parseTeamData(data: NextDataResponse): TeamData {
+export function parseTeamData(
+  data: NextDataResponse,
+  league: string = CURRENT_LEAGUE,
+  season: string = CURRENT_SEASON,
+): TeamData {
   const apollo = data.pageProps.__APOLLO_STATE__;
 
   let name = TEAM_NAME;
@@ -27,8 +32,10 @@ export function parseTeamData(data: NextDataResponse): TeamData {
     const home = resolve(apollo, resolve(apollo, game.home_team?.competition_team)?.team);
     const away = resolve(apollo, resolve(apollo, game.away_team?.competition_team)?.team);
     const pitch = resolve(apollo, game.pitch);
+    const { date, time } = parseGameDateTime(game.game_date);
     matches.push({
-      date: (game.game_date ?? "?").slice(0, 10),
+      date,
+      time,
       result: game.result ?? "?",
       scoreHome: game.score_home ?? null,
       scoreAway: game.score_away ?? null,
@@ -36,9 +43,11 @@ export function parseTeamData(data: NextDataResponse): TeamData {
       away: away.name ?? "?",
       pitch: pitch.name ?? "?",
       status: game.status ?? "?",
+      league,
+      season,
     });
   }
-  matches.sort((a, b) => b.date.localeCompare(a.date));
+    matches.sort((a, b) => b.date.localeCompare(a.date) || (b.time ?? "").localeCompare(a.time ?? ""));
 
   return {
     team: {
@@ -46,8 +55,8 @@ export function parseTeamData(data: NextDataResponse): TeamData {
       slug: TEAM_SLUG,
       crest,
       image,
-      league: CURRENT_LEAGUE,
-      season: CURRENT_SEASON,
+      league,
+      season,
     },
     matches,
   };

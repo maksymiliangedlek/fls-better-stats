@@ -1,12 +1,27 @@
 import { STALE_AFTER_MS } from "../fls/config";
+import { displayEventName } from "../fls/events";
 import type { PlayerProfile } from "../types/player";
 import type { TeamData } from "../types/team";
 import { getStore } from "./kv";
 import { INITIAL_META, KEY_META, KEY_ROSTER, KEY_TEAM, playerKey, type SyncMeta } from "./keys";
 
+function hydratePlayer(profile: PlayerProfile): PlayerProfile {
+  return {
+    ...profile,
+    summary: {
+      ...profile.summary,
+      achievements: profile.summary.achievements ?? [],
+    },
+    games: (profile.games ?? []).map((g) => ({
+      ...g,
+      events: (g.events ?? []).map(displayEventName),
+    })),
+  };
+}
+
 export async function getMeta(): Promise<SyncMeta> {
   const meta = await getStore().get<SyncMeta>(KEY_META);
-  return meta ?? { ...INITIAL_META };
+  return meta ? { ...INITIAL_META, ...meta } : { ...INITIAL_META };
 }
 
 export async function getRoster(): Promise<string[]> {
@@ -18,14 +33,15 @@ export async function getTeamData(): Promise<TeamData | null> {
 }
 
 export async function getPlayer(slug: string): Promise<PlayerProfile | null> {
-  return getStore().get<PlayerProfile>(playerKey(slug));
+  const profile = await getStore().get<PlayerProfile>(playerKey(slug));
+  return profile ? hydratePlayer(profile) : null;
 }
 
 export async function getAllPlayers(): Promise<PlayerProfile[]> {
   const roster = await getRoster();
   if (roster.length === 0) return [];
   const profiles = await getStore().getMany<PlayerProfile>(roster.map(playerKey));
-  return profiles.filter((p): p is PlayerProfile => p !== null);
+  return profiles.filter((p): p is PlayerProfile => p !== null).map(hydratePlayer);
 }
 
 export function isStale(lastSyncAt: number | null): boolean {

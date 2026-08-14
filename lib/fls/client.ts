@@ -6,10 +6,10 @@ const BUILD_ID_RE = /"buildId":"([^"]+)"/;
 /** FLS endpoints are slow; the player list can take ~30s per page. */
 const FETCH_TIMEOUT_MS = 55_000;
 
-export async function getBuildId(): Promise<string> {
+export async function getBuildId(timeoutMs = FETCH_TIMEOUT_MS): Promise<string> {
   const res = await fetch(BASE_URL, {
     headers: { "Accept-Language": "pl" },
-    signal: AbortSignal.timeout(FETCH_TIMEOUT_MS),
+    signal: AbortSignal.timeout(timeoutMs),
   });
   const html = await res.text();
   const match = html.match(BUILD_ID_RE);
@@ -31,7 +31,12 @@ export class FlsNotFoundError extends Error {
  * `path` is everything after `/_next/data/{buildId}/`, e.g.
  * `pl/menu-ligowe/tabela-wszech-czasow/zawodnicy/foo.json?playerSlug=foo`
  */
-export async function fetchJson(buildId: string, path: string, referer?: string): Promise<NextDataResponse> {
+export async function fetchJson(
+  buildId: string,
+  path: string,
+  referer?: string,
+  timeoutMs = FETCH_TIMEOUT_MS,
+): Promise<NextDataResponse> {
   const url = `${BASE_URL}/_next/data/${buildId}/${path}`;
   const res = await fetch(url, {
     headers: {
@@ -39,7 +44,7 @@ export async function fetchJson(buildId: string, path: string, referer?: string)
       Referer: referer ?? BASE_URL,
       "Accept-Language": "pl",
     },
-    signal: AbortSignal.timeout(FETCH_TIMEOUT_MS),
+    signal: AbortSignal.timeout(timeoutMs),
   });
   if (res.status === 404) throw new FlsNotFoundError(url);
   if (!res.ok) throw new Error(`FLS request failed (${res.status}) for ${url}`);
@@ -70,10 +75,13 @@ export async function fetchTeamData(
   leagueSlug: string,
   seasonSlug: string,
   teamSlug: string,
+  timeoutMs?: number,
 ): Promise<NextDataResponse> {
   return fetchJson(
     buildId,
     `en/menu-ligowe/${leagueSlug}/${seasonSlug}/zespoly/${teamSlug}.json` +
       `?leagueSlug=${leagueSlug}&seasonSlug=${seasonSlug}&teamSlug=${teamSlug}`,
+    undefined,
+    timeoutMs,
   );
 }

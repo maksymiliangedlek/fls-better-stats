@@ -20,6 +20,8 @@ export interface SyncMeta {
   /** Next index into the roster array to refresh player profiles from. */
   playerSyncIndex: number;
   lastSyncAt: number | null;
+  /** When the current-season team page was last fetched from FLS. */
+  lastTeamSyncAt: number | null;
   /** When the roster was last (re)discovered. */
   lastDiscoveryAt: number | null;
 }
@@ -30,5 +32,6 @@ export const INITIAL_META: SyncMeta = {
   combos: [],
   playerSyncIndex: 0,
   lastSyncAt: null,
+  lastTeamSyncAt: null,
   lastDiscoveryAt: null,
 };

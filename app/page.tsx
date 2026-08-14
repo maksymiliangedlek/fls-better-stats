@@ -5,11 +5,10 @@ import { MatchList } from "@/components/stats/MatchList";
 import { SectionShell } from "@/components/stats/SectionShell";
 import { SectionHeading } from "@/components/stats/SectionHeading";
 import { ProgressMeter } from "@/components/stats/ProgressMeter";
-import { ProgressBar } from "@/components/stats/ProgressBar";
 import { Sparkline } from "@/components/charts/Sparkline";
 import { LinkButton } from "@/components/ui/Button";
 import { HomeLanding } from "@/components/branding/HomeLanding";
-import { BootIcon, BalanceIcon, TargetIcon, MatchBallIcon } from "@/components/ui/icons";
+import { BootIcon, BalanceIcon, MatchBallIcon } from "@/components/ui/icons";
 import styles from "./page.module.css";
 
 export const dynamic = "force-dynamic";
@@ -18,7 +17,6 @@ export default async function Home() {
   const { data } = await getTeamOverview();
   const { record, rosterSize, topScorers, recentMatches, goalsTimeline } = data;
 
-  const pointsTarget = record ? Math.max(30, Math.ceil((record.points + 5) / 5) * 5) : 30;
   const gdRange = record
     ? Math.max(15, Math.ceil((Math.abs(record.goalDifference) + 5) / 5) * 5)
     : 15;
@@ -46,17 +44,6 @@ export default async function Home() {
             >
               <ProgressMeter value={record.goalDifference} range={gdRange} />
             </StatCard>
-            <StatCard label="Punkty" value={record.points} icon={<TargetIcon />}>
-              <ProgressBar
-                value={record.points}
-                target={pointsTarget}
-                caption={
-                  <>
-                    <strong>{record.points}</strong> / {pointsTarget} pkt do awansu
-                  </>
-                }
-              />
-            </StatCard>
           </div>
           <p className={styles.rosterNote}>{rosterSize} zawodników w bazie</p>
         </section>
@@ -65,17 +52,21 @@ export default async function Home() {
       {topScorers.length > 0 && (
         <section className="section container">
           <SectionHeading
-            eyebrow="Skład"
+            eyebrow="Zawodnicy"
             title="Najlepsi strzelcy"
-            action={<LinkButton href="/players" variant="navy">Cały skład</LinkButton>}
+            action={<LinkButton href="/players" variant="navy">Wszyscy zawodnicy</LinkButton>}
           />
           <RosterGrid players={topScorers} />
         </section>
       )}
 
       {recentMatches.length > 0 && (
-        <section id="terminarz" className="section container">
-          <SectionHeading eyebrow="Terminarz" title="Ostatnie mecze" />
+        <section className="section container">
+          <SectionHeading
+            eyebrow="Mecze"
+            title="Ostatnie mecze"
+            action={<LinkButton href="/mecze" variant="navy">Wszystkie mecze</LinkButton>}
+          />
           <SectionShell blur={recentMatches.length > 4}>
             <MatchList matches={recentMatches} />
           </SectionShell>

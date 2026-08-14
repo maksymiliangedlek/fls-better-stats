@@ -1,4 +1,6 @@
 import { TEAM_NAME } from "../fls/config";
+import { displayEventName } from "../fls/events";
+import { compareSeasons } from "../client/format";
 import type { GameLog, PlayerProfile } from "../types/player";
 import type {
   CompareRadar,
@@ -74,7 +76,7 @@ function buildSeasonOverlap(a: PlayerProfile, b: PlayerProfile): SeasonOverlap[]
     const seasonB = bBySeason.get(seasonA.season);
     if (seasonB) overlap.push({ season: seasonA.season, a: seasonA, b: seasonB });
   }
-  return overlap.sort((x, y) => y.season.localeCompare(x.season));
+  return overlap.sort((x, y) => compareSeasons(x.season, y.season));
 }
 
 function buildSharedMatches(a: PlayerProfile, b: PlayerProfile): SharedMatch[] {
@@ -88,8 +90,8 @@ function buildSharedMatches(a: PlayerProfile, b: PlayerProfile): SharedMatch[] {
         date: gameA.date,
         opponent: opponentOf(gameA),
         result: gameA.result,
-        aEvents: gameA.events,
-        bEvents: gameB.events,
+        aEvents: gameA.events.map(displayEventName),
+        bEvents: gameB.events.map(displayEventName),
       });
     }
   }

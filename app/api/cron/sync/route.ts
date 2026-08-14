@@ -5,7 +5,7 @@ export const dynamic = "force-dynamic";
 export const maxDuration = 300;
 
 /**
- * Chunked cron sync (configured in vercel.json). Vercel Cron sends
+ * Daily cron sync (Hobby: once per day). Vercel Cron sends
  * `Authorization: Bearer <CRON_SECRET>` when CRON_SECRET is set.
  */
 export async function GET(req: NextRequest) {

@@ -3,9 +3,9 @@ import {
   buildMetaEnvelope,
   getAllPlayers,
   getPlayer,
-  getTeamData,
   type Meta,
 } from "../cache/read";
+import { getTeamDataFresh } from "../cache/sync";
 import {
   buildGoalsTimeline,
   buildTeamRecord,
@@ -20,6 +20,7 @@ import {
 } from "../stats/leaderboards";
 import { buildPlayerStats, type PlayerStats } from "../stats/form";
 import { comparePlayers } from "../stats/compare";
+import { mergeTeamMatches, teamMatchesFromPlayers } from "../stats/matches";
 import type { PlayerProfile } from "../types/player";
 import type { TeamInfo, TeamMatch } from "../types/team";
 import type { CompareResult } from "../types/compare";
@@ -35,26 +36,32 @@ export interface TeamOverview {
 
 export async function getTeamOverview(): Promise<{ data: TeamOverview; meta: Meta }> {
   const [team, players, meta] = await Promise.all([
-    getTeamData(),
+    getTeamDataFresh(),
     getAllPlayers(),
     buildMetaEnvelope(),
   ]);
+  const matches = mergeTeamMatches(team?.matches ?? [], teamMatchesFromPlayers(players));
   return {
     data: {
       team: team?.team ?? null,
-      record: team ? buildTeamRecord(team.matches) : null,
+      record: matches.length > 0 ? buildTeamRecord(matches) : null,
       rosterSize: players.length,
       topScorers: buildLeaderboard(players, "goals").slice(0, 8),
-      recentMatches: team?.matches.slice(0, 5) ?? [],
-      goalsTimeline: team ? buildGoalsTimeline(team.matches) : [],
+      recentMatches: matches.slice(0, 5),
+      goalsTimeline: buildGoalsTimeline(matches),
     },
     meta,
   };
 }
 
 export async function getTeamMatches(): Promise<{ data: { matches: TeamMatch[] }; meta: Meta }> {
-  const [team, meta] = await Promise.all([getTeamData(), buildMetaEnvelope()]);
-  return { data: { matches: team?.matches ?? [] }, meta };
+  const [team, players, meta] = await Promise.all([
+    getTeamDataFresh(),
+    getAllPlayers(),
+    buildMetaEnvelope(),
+  ]);
+  const matches = mergeTeamMatches(team?.matches ?? [], teamMatchesFromPlayers(players));
+  return { data: { matches }, meta };
 }
 
 export interface RosterBoard {

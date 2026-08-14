@@ -6,9 +6,10 @@ import styles from "./FlowingMenuSection.module.css";
 const FlowingMenu = dynamic(() => import("./flowing-menu/FlowingMenu"), { ssr: false });
 
 const ITEMS: FlowingMenuItem[] = [
-  { link: "/players", text: "Skład", image: "/duck.png" },
+  { link: "/mecze", text: "Mecze", image: "/duck.png" },
+  { link: "/players", text: "Zawodnicy", image: "/duck.png" },
   { link: "/compare", text: "Porównaj", image: "/duck.png" },
-  { link: "#terminarz", text: "Terminarz", image: "/duck.png" },
+  { link: "/zdjecia", text: "Zdjęcia", image: "/duck.png" },
 ];
 
 export function FlowingMenuSection({ fill = false }: { fill?: boolean }) {

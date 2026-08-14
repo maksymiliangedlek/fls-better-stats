@@ -37,7 +37,7 @@
   font-family: var(--font-display, sans-serif);
   font-weight: 700;
   letter-spacing: 0.02em;
-  font-size: clamp(2.4rem, 9vh, 5.75rem);
+  font-size: clamp(1.85rem, 6.5vh, 4.5rem);
 }
 
 .menu__item-link:active {
@@ -90,15 +90,15 @@
   text-transform: uppercase;
   font-family: var(--font-display, sans-serif);
   font-weight: 700;
-  font-size: clamp(2.4rem, 9vh, 5.75rem);
+  font-size: clamp(1.85rem, 6.5vh, 4.5rem);
   line-height: 1;
   padding: 0 1vw;
 }
 
 .marquee__img {
-  width: 110px;
-  height: 90px;
-  min-height: 72px;
+  width: 88px;
+  height: 72px;
+  min-height: 56px;
   margin: 0 1.5vw;
   padding: 0;
   border-radius: 0;

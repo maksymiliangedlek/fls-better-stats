@@ -5,9 +5,10 @@ import { Crest } from "./Crest";
 import styles from "./SiteHeader.module.css";
 
 const NAV = [
-  { href: "/", label: "Drużyna" },
-  { href: "/players", label: "Skład" },
+  { href: "/mecze", label: "Mecze" },
+  { href: "/players", label: "Zawodnicy" },
   { href: "/compare", label: "Porównaj" },
+  { href: "/zdjecia", label: "Zdjęcia" },
 ];
 
 export function SiteHeader() {

@@ -69,7 +69,7 @@ function ProfileCardComponent({
   handle = "player",
   status = "",
   contactText = "Contact",
-  showUserInfo = true,
+  showUserInfo = false,
   href,
   onContactClick,
 }: ProfileCardProps) {
@@ -482,6 +482,7 @@ function ProfileCardComponent({
         <div className="pc-ducks" aria-hidden="true" />
         <div className="pc-shine" />
         <div className="pc-glare" />
+        <div className="pc-glitter" aria-hidden="true" />
         <div className="pc-content pc-avatar-content">
           {hasAvatar && (
             // eslint-disable-next-line @next/next/no-img-element

@@ -1,10 +1,37 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { eventName } from "./events";
 import { TEAM_NAME } from "./config";
+import { parseGameDateTime } from "./datetime";
 import { resolve, type NextDataResponse } from "./resolver";
 import type { GameLog, PlayerProfile, PlayerSummary, SeasonStats } from "../types/player";
 
 export interface RawPlayerProfile extends PlayerProfile {}
+
+const ACHIEVEMENT_RE =
+  /mvp|sz[oó]st[ck]|kr[oó]l strzel|najlepsz|wyr[oó][zź]n|jedenast|team of|zawodnik sezonu|bramkarz sezonu|mistrz|puchar|medal/i;
+
+function capitalizeAchievement(item: string): string {
+  return item.charAt(0).toLocaleUpperCase("pl-PL") + item.slice(1);
+}
+
+function parseAchievements(about: unknown): string[] {
+  if (typeof about !== "string" || !about.trim()) return [];
+  const text = about
+    .replace(/<br\s*\/?>/gi, ", ")
+    .replace(/<\/p>/gi, ", ")
+    .replace(/<[^>]+>/g, " ")
+    .replace(/&nbsp;/g, " ")
+    .replace(/&amp;/g, "&")
+    .replace(/\s+/g, " ")
+    .trim()
+    .replace(/^[,\s]+|[,\s]+$/g, "");
+  if (!text) return [];
+  return text
+    .split(/\s*,\s*/)
+    .map((item) => item.trim())
+    .filter((item) => item.length > 1 && ACHIEVEMENT_RE.test(item))
+    .map(capitalizeAchievement);
+}
 
 function perGame(value: number, games: number): number {
   return games > 0 ? Math.round((value / games) * 100) / 100 : 0;
@@ -28,6 +55,7 @@ export function parsePlayer(data: NextDataResponse): RawPlayerProfile {
     yellowCards: p.yellowCards ?? 0,
     redCards: p.redCards ?? 0,
     avatar: p.avatar?.url ?? null,
+    achievements: parseAchievements(p.about),
     goalsPerGame: perGame(p.goalsScored ?? 0, p.gamesPlayed ?? 0),
     assistsPerGame: perGame(p.assists ?? 0, p.gamesPlayed ?? 0),
     goalContributions: (p.goalsScored ?? 0) + (p.assists ?? 0),
@@ -53,7 +81,7 @@ export function parsePlayer(data: NextDataResponse): RawPlayerProfile {
     const events: string[] = (gp.events ?? []).map((eRef: any) => {
       const ev = resolve(apollo, eRef);
       const et = resolve(apollo, ev.event_type);
-      return eventName(et.id ?? "?");
+      return eventName(et.id ?? "?", et.name);
     });
 
     const home = resolve(apollo, resolve(apollo, game.home_team?.competition_team)?.team);
@@ -63,9 +91,11 @@ export function parsePlayer(data: NextDataResponse): RawPlayerProfile {
     const league = resolve(apollo, competition.league);
     const season = resolve(apollo, competition.season);
     const pitch = resolve(apollo, game.pitch);
+    const { date, time } = parseGameDateTime(game.game_date);
 
     return {
-      date: (game.game_date ?? "?").slice(0, 10),
+      date,
+      time,
       league: league.slug ?? "?",
       season: season.slug ?? "?",
       result: game.result ?? "?",
@@ -106,6 +136,7 @@ export function filterOgniwo(profile: RawPlayerProfile): PlayerProfile {
   const summary: PlayerSummary = {
     ...profile.summary,
     ...totals,
+    achievements: profile.summary.achievements ?? [],
     goalsPerGame: perGame(totals.goals, totals.games),
     assistsPerGame: perGame(totals.assists, totals.games),
     goalContributions: totals.goals + totals.assists,

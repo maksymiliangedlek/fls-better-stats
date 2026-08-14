@@ -27,8 +27,11 @@ export function MatchList({ matches }: { matches: TeamMatch[] }) {
       {matches.map((m, i) => {
         const res = outcome(m);
         return (
-          <li key={`${m.date}-${i}`} className={styles.row}>
-            <span className={styles.date}>{formatDate(m.date)}</span>
+          <li key={`${m.date}-${m.time ?? ""}-${i}`} className={styles.row}>
+            <span className={styles.when}>
+              <span className={styles.date}>{formatDate(m.date)}</span>
+              {m.time && <span className={styles.time}>{m.time}</span>}
+            </span>
             <span className={styles.teams}>
               <span className={m.home === TEAM_NAME ? styles.own : ""}>{m.home}</span>
               <span className={styles.score}>{m.result}</span>

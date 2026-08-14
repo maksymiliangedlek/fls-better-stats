@@ -11,6 +11,7 @@ export interface PlayerSummary {
   goalsPerGame: number;
   assistsPerGame: number;
   goalContributions: number;
+  achievements?: string[];
 }
 
 export interface SeasonStats {
@@ -26,6 +27,7 @@ export interface SeasonStats {
 
 export interface GameLog {
   date: string;
+  time?: string | null;
   league: string;
   season: string;
   result: string;

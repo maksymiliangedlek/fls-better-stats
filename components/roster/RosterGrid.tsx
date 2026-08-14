@@ -9,9 +9,11 @@ export function RosterGrid({
   players: LeaderboardEntry[];
   enableTilt?: boolean;
 }) {
+  const ordered = [...players].sort((a, b) => Number(Boolean(b.avatar)) - Number(Boolean(a.avatar)));
+
   return (
     <div className={styles.grid}>
-      {players.map((p) => (
+      {ordered.map((p) => (
         <PlayerProfileCard key={p.slug} player={p} enableTilt={enableTilt} />
       ))}
     </div>
