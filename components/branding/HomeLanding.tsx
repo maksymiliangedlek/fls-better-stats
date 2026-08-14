@@ -45,7 +45,7 @@ export function HomeLanding() {
       <div className={styles.brand}>
         <div ref={stageRef} className={styles.stage}>
           <div className={styles.crest}>
-            <Crest size={176} src="/crest-ring.png" priority />
+            <Crest size={232} src="/crest-ring.png" priority />
           </div>
         </div>
         <FallingTitle active={titleIn} reduced={reduced} />

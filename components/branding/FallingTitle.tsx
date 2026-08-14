@@ -1,80 +1,100 @@
 "use client";
-import { motion } from "motion/react";
+import { useLayoutEffect, useRef, useState } from "react";
+import { motion, type Easing } from "motion/react";
 import { FLY_DURATION } from "./FlyingDuck";
 import styles from "./FallingTitle.module.css";
 
-const times = [0, 0.52, 0.7, 1];
-const ease = ["easeIn", "easeOut", [0.22, 1, 0.36, 1]] as const;
+const WORDS = ["OGNIWO", "BIELANY"] as const;
+/** arrive → contact → bounce apart → settle, ending with the duck. */
+const TIMES = [0, 0.5, 0.62, 1];
+const EASE: Easing[] = ["easeIn", "easeOut", "easeInOut"];
+/** How far letters collapse toward their word's centre while travelling. */
+const SQUEEZE_EM = 0.45;
+
+type Geo = {
+  start: [number, number];
+  knock: number;
+  rebound: number;
+  squeeze: number;
+};
 
 export function FallingTitle({ active, reduced }: { active: boolean; reduced: boolean }) {
-  return (
-    <h1 className={styles.title} aria-label="OGNIWO BIELANY">
-      <Word
-        reduced={reduced}
-        active={active}
-        from="-78vw"
-        collide="5vw"
-        rebound="-1vw"
-        tilt={[-1.5, 2, -0.4, 0]}
-      >
-        OGNIWO
-      </Word>
-      <span className={styles.space} aria-hidden>
-        {"\u00A0"}
-      </span>
-      <Word
-        reduced={reduced}
-        active={active}
-        from="78vw"
-        collide="-5vw"
-        rebound="1vw"
-        tilt={[1.5, -2, 0.4, 0]}
-      >
-        BIELANY
-      </Word>
-    </h1>
-  );
-}
+  const wordRefs = [useRef<HTMLSpanElement>(null), useRef<HTMLSpanElement>(null)];
+  const [geo, setGeo] = useState<Geo | null>(null);
 
-function Word({
-  children,
-  from,
-  collide,
-  rebound,
-  tilt,
-  active,
-  reduced,
-}: {
-  children: string;
-  from: string;
-  collide: string;
-  rebound: string;
-  tilt: number[];
-  active: boolean;
-  reduced: boolean;
-}) {
+  useLayoutEffect(() => {
+    const [a, b] = wordRefs.map((r) => r.current);
+    if (!a || !b) return;
+    const fontSize = parseFloat(getComputedStyle(a).fontSize);
+    const ra = a.getBoundingClientRect();
+    const rb = b.getBoundingClientRect();
+    const squeeze = SQUEEZE_EM * fontSize;
+    // Collapsing letters inward widens the gap, so the words must travel past
+    // their resting spot by that much again to actually touch.
+    const midA = (WORDS[0].length - 1) / 2;
+    const midB = (WORDS[1].length - 1) / 2;
+    const close = rb.left - ra.right + (midA + midB) * squeeze;
+    setGeo({
+      start: [-(ra.right + 80), window.innerWidth - rb.left + 80],
+      knock: close / 2,
+      rebound: close * 0.14,
+      squeeze,
+    });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  const run = active && geo && !reduced;
+
   return (
-    <motion.span
-      className={styles.word}
-      initial={reduced ? false : { x: from, rotate: tilt[0], letterSpacing: "0.08em" }}
-      animate={
-        active
-          ? {
-              x: [from, collide, rebound, "0vw"],
-              rotate: tilt,
-              letterSpacing: ["0.08em", "0.1em", "0.28em", "0.5em"],
+    // Stays hidden until measured, so the resting text never paints.
+    <h1 className={styles.title} data-ready={geo ? "" : undefined} aria-label="OGNIWO BIELANY">
+      {WORDS.map((word, w) => {
+        const letters = word.split("");
+        const mid = (letters.length - 1) / 2;
+        const inward = w === 0 ? 1 : -1;
+
+        return (
+          <motion.span
+            key={word}
+            ref={wordRefs[w]}
+            className={styles.word}
+            animate={
+              run
+                ? {
+                    x: [geo.start[w], inward * geo.knock, -inward * geo.rebound, 0],
+                    rotate: [0, inward * -1.2, inward * 0.5, 0],
+                  }
+                : undefined
             }
-          : reduced
-            ? undefined
-            : { x: from, rotate: tilt[0], letterSpacing: "0.08em" }
-      }
-      transition={
-        reduced
-          ? { duration: 0 }
-          : { duration: FLY_DURATION, times, ease }
-      }
-    >
-      {children}
-    </motion.span>
+            transition={run ? { duration: FLY_DURATION, times: TIMES, ease: EASE } : { duration: 0 }}
+          >
+            {letters.map((ch, i) => {
+              const off = geo ? (mid - i) * geo.squeeze : 0;
+              const contact = w === 0 ? i === letters.length - 1 : i === 0;
+              return (
+                <motion.span
+                  key={`${ch}${i}`}
+                  className={styles.letter}
+                  animate={
+                    run
+                      ? {
+                          x: [off, off, off * 0.5, 0],
+                          scaleX: contact ? [1, 1, 0.84, 1] : [1, 1, 0.95, 1],
+                          scaleY: contact ? [1, 1, 1.1, 1] : [1, 1, 1, 1],
+                        }
+                      : undefined
+                  }
+                  transition={
+                    run ? { duration: FLY_DURATION, times: TIMES, ease: EASE } : { duration: 0 }
+                  }
+                >
+                  {ch}
+                </motion.span>
+              );
+            })}
+          </motion.span>
+        );
+      })}
+    </h1>
   );
 }

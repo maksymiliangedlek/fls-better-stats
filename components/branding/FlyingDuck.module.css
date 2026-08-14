@@ -2,10 +2,10 @@
   --fly: 2.2s;
   position: absolute;
   z-index: 6;
-  width: 176px;
-  height: 176px;
-  margin-left: -88px;
-  margin-top: -88px;
+  width: 232px;
+  height: 232px;
+  margin-left: -116px;
+  margin-top: -116px;
   pointer-events: none;
   will-change: transform;
 }
@@ -128,10 +128,10 @@
 
 @media (max-width: 639px) {
   .flyer {
-    width: 140px;
-    height: 140px;
-    margin-left: -70px;
-    margin-top: -70px;
+    width: 176px;
+    height: 176px;
+    margin-left: -88px;
+    margin-top: -88px;
   }
 }
 
