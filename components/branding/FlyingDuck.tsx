@@ -20,7 +20,7 @@ export function FlyingDuck({
     <motion.div
       className={styles.flyer}
       style={{ left: originX, top: originY }}
-      initial={{ x: startX, y: -10, scale: 2.85, rotate: -5 }}
+      initial={{ x: startX, y: -10, scale: 3.79, rotate: -5 }}
       animate={{
         x: 0,
         y: [-10, -16, -6, -12, -3, 0],

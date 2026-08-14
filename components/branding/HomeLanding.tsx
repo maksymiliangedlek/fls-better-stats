@@ -25,7 +25,7 @@ export function HomeLanding() {
     setPin({
       x: crestCenterX - lb.left,
       y: sb.top + sb.height / 2 - lb.top,
-      startX: window.innerWidth - crestCenterX + 280,
+      startX: window.innerWidth - crestCenterX + 340,
     });
     setTitleIn(true);
   }, []);

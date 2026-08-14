@@ -19,12 +19,24 @@ type Geo = {
 };
 
 export function FallingTitle({ active, reduced }: { active: boolean; reduced: boolean }) {
+  const titleRef = useRef<HTMLHeadingElement>(null);
   const wordRefs = [useRef<HTMLSpanElement>(null), useRef<HTMLSpanElement>(null)];
   const [geo, setGeo] = useState<Geo | null>(null);
 
   useLayoutEffect(() => {
+    const h1 = titleRef.current;
     const [a, b] = wordRefs.map((r) => r.current);
-    if (!a || !b) return;
+    if (!h1 || !a || !b) return;
+
+    // Shrink the type until the whole line fits, then measure the collision.
+    h1.style.setProperty("--fit", "1");
+    const cs = getComputedStyle(h1);
+    const available =
+      h1.clientWidth - parseFloat(cs.paddingLeft) - parseFloat(cs.paddingRight);
+    const natural = b.getBoundingClientRect().right - a.getBoundingClientRect().left;
+    const fit = natural > 0 ? Math.min(1, (available * 0.98) / natural) : 1;
+    h1.style.setProperty("--fit", String(fit));
+
     const fontSize = parseFloat(getComputedStyle(a).fontSize);
     const ra = a.getBoundingClientRect();
     const rb = b.getBoundingClientRect();
@@ -47,7 +59,12 @@ export function FallingTitle({ active, reduced }: { active: boolean; reduced: bo
 
   return (
     // Stays hidden until measured, so the resting text never paints.
-    <h1 className={styles.title} data-ready={geo ? "" : undefined} aria-label="OGNIWO BIELANY">
+    <h1
+      ref={titleRef}
+      className={styles.title}
+      data-ready={geo ? "" : undefined}
+      aria-label="OGNIWO BIELANY"
+    >
       {WORDS.map((word, w) => {
         const letters = word.split("");
         const mid = (letters.length - 1) / 2;
