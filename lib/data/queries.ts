@@ -99,17 +99,32 @@ export type CompareOutcome =
   | { ok: true; data: CompareResult; meta: Meta }
   | { ok: false; error: string };
 
-export async function getCompare(a: string, b: string): Promise<CompareOutcome> {
+export async function getCompare(
+  a: string,
+  b: string,
+  c?: string | null,
+): Promise<CompareOutcome> {
   if (!a || !b) return { ok: false, error: "Both 'a' and 'b' player slugs are required." };
-  if (a === b) return { ok: false, error: "Choose two different players." };
 
-  const [profileA, profileB, meta] = await Promise.all([
+  const third = c?.trim() || null;
+  const slugs = third ? [a, b, third] : [a, b];
+  if (new Set(slugs).size !== slugs.length) {
+    return { ok: false, error: "Choose different players." };
+  }
+
+  const [profileA, profileB, profileC, meta] = await Promise.all([
     getPlayer(a),
     getPlayer(b),
+    third ? getPlayer(third) : Promise.resolve(null),
     buildMetaEnvelope(),
   ]);
   if (!profileA) return { ok: false, error: `Player '${a}' not found in cache.` };
   if (!profileB) return { ok: false, error: `Player '${b}' not found in cache.` };
+  if (third && !profileC) return { ok: false, error: `Player '${third}' not found in cache.` };
 
-  return { ok: true, data: comparePlayers(profileA, profileB), meta };
+  return {
+    ok: true,
+    data: comparePlayers(profileA, profileB, profileC ?? undefined),
+    meta,
+  };
 }

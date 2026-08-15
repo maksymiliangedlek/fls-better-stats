@@ -13,14 +13,14 @@ export function PlayerPicker({
   onChange,
   label,
   accent,
-  excludeSlug,
+  excludeSlugs,
 }: {
   players: LeaderboardEntry[];
   value: string | null;
   onChange: (slug: string) => void;
   label: string;
-  accent: "gold" | "navy";
-  excludeSlug?: string | null;
+  accent: "gold" | "navy" | "wine";
+  excludeSlugs?: string[];
 }) {
   const [open, setOpen] = useState(false);
   const [query, setQuery] = useState("");
@@ -34,10 +34,10 @@ export function PlayerPicker({
   const filtered = useMemo(() => {
     const q = query.trim().toLowerCase();
     return players
-      .filter((p) => p.slug !== excludeSlug)
+      .filter((p) => !excludeSlugs?.includes(p.slug))
       .filter((p) => (q ? p.name.toLowerCase().includes(q) : true))
       .slice(0, 60);
-  }, [players, query, excludeSlug]);
+  }, [players, query, excludeSlugs]);
 
   useEffect(() => {
     setActiveIndex(0);

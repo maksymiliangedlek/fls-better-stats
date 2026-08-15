@@ -9,8 +9,9 @@ export async function GET(req: NextRequest) {
     const params = req.nextUrl.searchParams;
     const a = params.get("a") ?? "";
     const b = params.get("b") ?? "";
+    const c = params.get("c");
 
-    const result = await getCompare(a, b);
+    const result = await getCompare(a, b, c);
     if (!result.ok) {
       const msg = result.error;
       return msg.includes("not found") ? notFound(msg) : badRequest(msg);

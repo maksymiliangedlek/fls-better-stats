@@ -8,7 +8,7 @@ export const dynamic = "force-dynamic";
 
 export const metadata: Metadata = {
   title: "Porównaj zawodników — Ogniwo Bielany",
-  description: "Head-to-head porównanie dwóch zawodników Ogniwo Bielany.",
+  description: "Porównanie dwóch lub trzech zawodników Ogniwo Bielany.",
 };
 
 export default async function ComparePage() {

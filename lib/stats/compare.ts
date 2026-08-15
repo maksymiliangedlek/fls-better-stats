@@ -9,37 +9,43 @@ import type {
   SeasonOverlap,
   SharedMatch,
 } from "../types/compare";
+import { buildWinRates } from "./winrate";
 
-function pair<T>(a: T, b: T): [T, T] {
-  return [a, b];
+function headerOf(p: PlayerProfile) {
+  return { slug: p.slug, name: p.summary.name, avatar: p.summary.avatar };
+}
+
+function gpa(p: PlayerProfile): number {
+  return p.summary.games > 0
+    ? Math.round((p.summary.goalContributions / p.summary.games) * 100) / 100
+    : 0;
 }
 
 function opponentOf(game: GameLog): string {
   return game.home === TEAM_NAME ? game.away : game.home;
 }
 
-function buildTotals(a: PlayerProfile, b: PlayerProfile): CompareTotals {
-  const sa = a.summary;
-  const sb = b.summary;
+function matchKey(game: GameLog): string {
+  return `${game.date}|${opponentOf(game)}`;
+}
+
+function buildTotals(profiles: PlayerProfile[]): CompareTotals {
   return {
-    games: pair(sa.games, sb.games),
-    goals: pair(sa.goals, sb.goals),
-    assists: pair(sa.assists, sb.assists),
-    goalContributions: pair(sa.goalContributions, sb.goalContributions),
-    mvp: pair(sa.mvp, sb.mvp),
-    yellowCards: pair(sa.yellowCards, sb.yellowCards),
-    redCards: pair(sa.redCards, sb.redCards),
-    goalsPerGame: pair(sa.goalsPerGame, sb.goalsPerGame),
-    assistsPerGame: pair(sa.assistsPerGame, sb.assistsPerGame),
-    goalContributionsPerGame: pair(
-      sa.games > 0 ? Math.round((sa.goalContributions / sa.games) * 100) / 100 : 0,
-      sb.games > 0 ? Math.round((sb.goalContributions / sb.games) * 100) / 100 : 0,
-    ),
+    games: profiles.map((p) => p.summary.games),
+    goals: profiles.map((p) => p.summary.goals),
+    assists: profiles.map((p) => p.summary.assists),
+    goalContributions: profiles.map((p) => p.summary.goalContributions),
+    mvp: profiles.map((p) => p.summary.mvp),
+    yellowCards: profiles.map((p) => p.summary.yellowCards),
+    redCards: profiles.map((p) => p.summary.redCards),
+    goalsPerGame: profiles.map((p) => p.summary.goalsPerGame),
+    assistsPerGame: profiles.map((p) => p.summary.assistsPerGame),
+    goalContributionsPerGame: profiles.map(gpa),
   };
 }
 
-/** Normalize each axis to 0-100 relative to the higher of the two values. */
-function buildRadar(a: PlayerProfile, b: PlayerProfile): CompareRadar {
+/** Normalize each axis to 0-100 relative to the highest value among the players. */
+function buildRadar(profiles: PlayerProfile[]): CompareRadar {
   const mvpRate = (p: PlayerProfile) =>
     p.summary.games > 0 ? p.summary.mvp / p.summary.games : 0;
   const discipline = (p: PlayerProfile) =>
@@ -47,66 +53,70 @@ function buildRadar(a: PlayerProfile, b: PlayerProfile): CompareRadar {
       ? 1 - (p.summary.yellowCards + p.summary.redCards * 2) / p.summary.games
       : 1;
 
-  const rawAxes: { label: string; a: number; b: number }[] = [
-    { label: "Gole/mecz", a: a.summary.goalsPerGame, b: b.summary.goalsPerGame },
-    { label: "Asysty/mecz", a: a.summary.assistsPerGame, b: b.summary.assistsPerGame },
+  const rawAxes: { label: string; values: number[] }[] = [
+    { label: "Gole/mecz", values: profiles.map((p) => p.summary.goalsPerGame) },
+    { label: "Asysty/mecz", values: profiles.map((p) => p.summary.assistsPerGame) },
     {
       label: "G+A/mecz",
-      a: a.summary.games > 0 ? a.summary.goalContributions / a.summary.games : 0,
-      b: b.summary.games > 0 ? b.summary.goalContributions / b.summary.games : 0,
+      values: profiles.map((p) =>
+        p.summary.games > 0 ? p.summary.goalContributions / p.summary.games : 0,
+      ),
     },
-    { label: "MVP rate", a: mvpRate(a), b: mvpRate(b) },
-    { label: "Dyscyplina", a: discipline(a), b: discipline(b) },
-    { label: "Mecze", a: a.summary.games, b: b.summary.games },
+    { label: "MVP rate", values: profiles.map(mvpRate) },
+    { label: "Dyscyplina", values: profiles.map(discipline) },
+    { label: "Mecze", values: profiles.map((p) => p.summary.games) },
   ];
 
-  const axes = rawAxes.map((ax) => ax.label);
-  const values: [number, number][] = rawAxes.map((ax) => {
-    const max = Math.max(ax.a, ax.b, 0.0001);
-    return [Math.round((ax.a / max) * 100), Math.round((ax.b / max) * 100)];
-  });
-
-  return { axes, values };
+  return {
+    axes: rawAxes.map((ax) => ax.label),
+    values: rawAxes.map((ax) => {
+      const max = Math.max(...ax.values, 0.0001);
+      return ax.values.map((v) => Math.round((v / max) * 100));
+    }),
+  };
 }
 
-function buildSeasonOverlap(a: PlayerProfile, b: PlayerProfile): SeasonOverlap[] {
-  const bBySeason = new Map(b.seasons.map((s) => [s.season, s]));
+function buildSeasonOverlap(profiles: PlayerProfile[]): SeasonOverlap[] {
+  const bySeason = profiles.map((p) => new Map(p.seasons.map((s) => [s.season, s])));
   const overlap: SeasonOverlap[] = [];
-  for (const seasonA of a.seasons) {
-    const seasonB = bBySeason.get(seasonA.season);
-    if (seasonB) overlap.push({ season: seasonA.season, a: seasonA, b: seasonB });
+  for (const season of profiles[0].seasons) {
+    const stats = bySeason.map((map) => map.get(season.season));
+    if (stats.every(Boolean)) {
+      overlap.push({ season: season.season, stats: stats.filter((s) => s !== undefined) });
+    }
   }
   return overlap.sort((x, y) => compareSeasons(x.season, y.season));
 }
 
-function buildSharedMatches(a: PlayerProfile, b: PlayerProfile): SharedMatch[] {
-  const key = (g: GameLog) => `${g.date}|${opponentOf(g)}`;
-  const bByKey = new Map(b.games.map((g) => [key(g), g]));
+function buildSharedMatches(profiles: PlayerProfile[]): SharedMatch[] {
+  const maps = profiles.slice(1).map((p) => new Map(p.games.map((g) => [matchKey(g), g])));
   const shared: SharedMatch[] = [];
-  for (const gameA of a.games) {
-    const gameB = bByKey.get(key(gameA));
-    if (gameB) {
-      shared.push({
-        date: gameA.date,
-        opponent: opponentOf(gameA),
-        result: gameA.result,
-        aEvents: gameA.events.map(displayEventName),
-        bEvents: gameB.events.map(displayEventName),
-      });
-    }
+  for (const game of profiles[0].games) {
+    const others = maps.map((map) => map.get(matchKey(game)));
+    if (!others.every(Boolean)) continue;
+    const games = [game, ...others.filter((g) => g !== undefined)];
+    shared.push({
+      date: game.date,
+      opponent: opponentOf(game),
+      result: game.result,
+      events: games.map((g) => g.events.map(displayEventName)),
+    });
   }
   return shared.sort((x, y) => y.date.localeCompare(x.date));
 }
 
-export function comparePlayers(a: PlayerProfile, b: PlayerProfile): CompareResult {
+export function comparePlayers(
+  a: PlayerProfile,
+  b: PlayerProfile,
+  c?: PlayerProfile,
+): CompareResult {
+  const profiles = c ? [a, b, c] : [a, b];
   return {
-    players: pair(
-      { slug: a.slug, name: a.summary.name, avatar: a.summary.avatar },
-      { slug: b.slug, name: b.summary.name, avatar: b.summary.avatar },
-    ),
-    totals: buildTotals(a, b),
-    radar: buildRadar(a, b),
-    seasonOverlap: buildSeasonOverlap(a, b),
-    sharedMatches: buildSharedMatches(a, b),
+    players: profiles.map(headerOf),
+    totals: buildTotals(profiles),
+    radar: buildRadar(profiles),
+    winRates: profiles.map(buildWinRates),
+    seasonOverlap: buildSeasonOverlap(profiles),
+    sharedMatches: buildSharedMatches(profiles),
   };
 }

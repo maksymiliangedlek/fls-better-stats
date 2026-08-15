@@ -1,3 +1,4 @@
+import type { PlayerWinRates } from "../stats/winrate";
 import type { SeasonStats } from "./player";
 
 export interface ComparePlayerHeader {
@@ -7,42 +8,41 @@ export interface ComparePlayerHeader {
 }
 
 export interface CompareTotals {
-  games: [number, number];
-  goals: [number, number];
-  assists: [number, number];
-  goalContributions: [number, number];
-  mvp: [number, number];
-  yellowCards: [number, number];
-  redCards: [number, number];
-  goalsPerGame: [number, number];
-  assistsPerGame: [number, number];
-  goalContributionsPerGame: [number, number];
+  games: number[];
+  goals: number[];
+  assists: number[];
+  goalContributions: number[];
+  mvp: number[];
+  yellowCards: number[];
+  redCards: number[];
+  goalsPerGame: number[];
+  assistsPerGame: number[];
+  goalContributionsPerGame: number[];
 }
 
 export interface CompareRadar {
   axes: string[];
-  /** Per axis: [playerA, playerB], normalized 0-100. */
-  values: [number, number][];
+  /** Per axis: one normalized 0–100 value per player. */
+  values: number[][];
 }
 
 export interface SeasonOverlap {
   season: string;
-  a: SeasonStats;
-  b: SeasonStats;
+  stats: SeasonStats[];
 }
 
 export interface SharedMatch {
   date: string;
   opponent: string;
   result: string;
-  aEvents: string[];
-  bEvents: string[];
+  events: string[][];
 }
 
 export interface CompareResult {
-  players: [ComparePlayerHeader, ComparePlayerHeader];
+  players: ComparePlayerHeader[];
   totals: CompareTotals;
   radar: CompareRadar;
+  winRates: PlayerWinRates[];
   seasonOverlap: SeasonOverlap[];
   sharedMatches: SharedMatch[];
 }

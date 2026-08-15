@@ -137,6 +137,118 @@
   color: var(--c-navy) !important;
 }
 
+.wine {
+  color: #9b3d4d !important;
+}
+
+.addThird {
+  display: inline-flex;
+  align-items: center;
+  margin: -0.5rem 0 1.5rem;
+  padding: 0.55rem 0.9rem;
+  border-radius: 12px;
+  border: 1.5px dashed var(--c-line);
+  background: transparent;
+  color: var(--c-navy);
+  font-size: 0.92rem;
+  font-weight: 650;
+  cursor: pointer;
+  transition: background-color var(--duration-spring) var(--ease-spring),
+    border-color var(--duration-spring) var(--ease-spring);
+}
+
+.addThird:hover {
+  background: var(--c-navy-050);
+  border-color: var(--c-navy);
+}
+
+.addThird:active {
+  transform: scale(var(--press-scale));
+  transition: transform 100ms ease-out;
+}
+
+.thirdSlot {
+  display: flex;
+  align-items: flex-end;
+  gap: 0.4rem;
+  flex: 1;
+  min-width: 220px;
+}
+
+.thirdSlot > :first-child {
+  flex: 1;
+  min-width: 0;
+}
+
+.removeThird {
+  flex: none;
+  width: 44px;
+  height: 44px;
+  margin-bottom: 2px;
+  border-radius: 12px;
+  border: 1.5px solid var(--c-line);
+  background: var(--surface);
+  color: var(--c-muted);
+  font-size: 1.35rem;
+  line-height: 1;
+  cursor: pointer;
+  transition: background-color var(--duration-spring) var(--ease-spring),
+    color var(--duration-spring) var(--ease-spring),
+    border-color var(--duration-spring) var(--ease-spring);
+}
+
+.removeThird:hover {
+  background: var(--c-navy);
+  color: #fff;
+  border-color: var(--c-navy);
+}
+
+.removeThird:active {
+  transform: scale(var(--press-scale));
+  transition: transform 100ms ease-out;
+}
+
+.rateCell {
+  min-width: 8.5rem;
+}
+
+.rateValue {
+  display: block;
+  font-variant-numeric: tabular-nums;
+}
+
+.rateBar {
+  display: flex;
+  height: 6px;
+  border-radius: 999px;
+  overflow: hidden;
+  background: var(--c-navy-050);
+  margin: 0.4rem 0 0.3rem;
+}
+
+.rateWin {
+  background: #1f9d55;
+}
+
+.rateDraw {
+  background: #b0870f;
+}
+
+.rateLoss {
+  background: #c0392b;
+}
+
+.rateRecord {
+  display: block;
+  font-size: 0.78rem;
+  color: var(--c-muted);
+}
+
+.rateEmpty {
+  color: var(--c-muted);
+  font-size: 0.85rem;
+}
+
 @media (max-width: 767px) {
   .chartGrid {
     grid-template-columns: 1fr;
@@ -147,5 +259,8 @@
   .swap {
     order: 3;
     margin: 0 auto;
+  }
+  .thirdSlot {
+    flex: 1 1 100%;
   }
 }

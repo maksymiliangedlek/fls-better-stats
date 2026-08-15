@@ -41,7 +41,12 @@ export function fetchPlayer(slug: string): Promise<ApiEnvelope<PlayerDetail>> {
   return getJson<PlayerDetail>(`/api/players/${encodeURIComponent(slug)}`);
 }
 
-export function fetchCompare(a: string, b: string): Promise<ApiEnvelope<CompareResult>> {
+export function fetchCompare(
+  a: string,
+  b: string,
+  c?: string | null,
+): Promise<ApiEnvelope<CompareResult>> {
   const qs = new URLSearchParams({ a, b });
+  if (c) qs.set("c", c);
   return getJson<CompareResult>(`/api/compare?${qs.toString()}`);
 }

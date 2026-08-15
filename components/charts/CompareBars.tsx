@@ -20,20 +20,22 @@ const METRICS: { key: keyof CompareTotals; label: string }[] = [
   { key: "games", label: "Mecze" },
 ];
 
+const FILLS = [CHART.gold, CHART.navy, CHART.wine] as const;
+
 export function CompareBars({
   totals,
-  nameA,
-  nameB,
+  names,
 }: {
   totals: CompareTotals;
-  nameA: string;
-  nameB: string;
+  names: string[];
 }) {
-  const rows = METRICS.map((m) => ({
-    metric: m.label,
-    [nameA]: totals[m.key][0],
-    [nameB]: totals[m.key][1],
-  }));
+  const rows = METRICS.map((m) => {
+    const row: Record<string, string | number> = { metric: m.label };
+    names.forEach((name, i) => {
+      row[name] = totals[m.key][i];
+    });
+    return row;
+  });
 
   return (
     <ResponsiveContainer width="100%" height="100%">
@@ -43,8 +45,15 @@ export function CompareBars({
         <YAxis tick={{ fontSize: 11, fill: CHART.axis }} allowDecimals={false} />
         <Tooltip contentStyle={tooltipStyle} cursor={{ fill: "rgba(12,69,99,0.05)" }} />
         <Legend wrapperStyle={{ fontSize: 12 }} />
-        <Bar dataKey={nameA} fill={CHART.gold} radius={[4, 4, 0, 0]} isAnimationActive={false} />
-        <Bar dataKey={nameB} fill={CHART.navy} radius={[4, 4, 0, 0]} isAnimationActive={false} />
+        {names.map((name, i) => (
+          <Bar
+            key={name}
+            dataKey={name}
+            fill={FILLS[i]}
+            radius={[4, 4, 0, 0]}
+            isAnimationActive={false}
+          />
+        ))}
       </BarChart>
     </ResponsiveContainer>
   );

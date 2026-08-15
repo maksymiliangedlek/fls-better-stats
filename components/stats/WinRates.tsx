@@ -7,12 +7,10 @@ function formatRate(rate: WinRate): string {
 
 function WinRateCard({
   label,
-  hint,
   rate,
   baseline,
 }: {
   label: string;
-  hint: string;
   rate: WinRate;
   baseline?: WinRate;
 }) {
@@ -21,7 +19,6 @@ function WinRateCard({
   return (
     <div className={styles.card}>
       <span className={styles.label}>{label}</span>
-      <span className={styles.hint}>{hint}</span>
       {rate.games > 0 ? (
         <>
           <span className={styles.value}>{formatRate(rate)}</span>
@@ -51,19 +48,9 @@ function WinRateCard({
 export function WinRates({ rates }: { rates: PlayerWinRates }) {
   return (
     <div className={styles.grid}>
-      <WinRateCard label="Gdy grał" hint="wszystkie mecze w barwach Ogniwa" rate={rates.played} />
-      <WinRateCard
-        label="Gdy strzelał"
-        hint="mecze z co najmniej jedną bramką"
-        rate={rates.scored}
-        baseline={rates.played}
-      />
-      <WinRateCard
-        label="Gdy asystował"
-        hint="mecze z co najmniej jedną asystą"
-        rate={rates.assisted}
-        baseline={rates.played}
-      />
+      <WinRateCard label="Gdy grał" rate={rates.played} />
+      <WinRateCard label="Gdy strzelał" rate={rates.scored} baseline={rates.played} />
+      <WinRateCard label="Gdy asystował" rate={rates.assisted} baseline={rates.played} />
     </div>
   );
 }

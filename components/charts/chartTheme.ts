@@ -3,6 +3,7 @@ export const CHART = {
   navyLight: "#3d7ea6",
   gold: "#c9a227",
   goldLight: "#e8c766",
+  wine: "#9b3d4d",
   grid: "rgba(12, 69, 99, 0.12)",
   axis: "#5b6b76",
   tooltipBg: "#ffffff",

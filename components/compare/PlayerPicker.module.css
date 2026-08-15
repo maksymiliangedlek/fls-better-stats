@@ -41,6 +41,9 @@
 .navy .trigger {
   border-color: rgba(12, 69, 99, 0.35);
 }
+.wine .trigger {
+  border-color: rgba(155, 61, 77, 0.5);
+}
 
 .trigger:hover {
   border-color: var(--c-navy);
