@@ -1,9 +1,10 @@
 import { STALE_AFTER_MS } from "../fls/config";
 import { displayEventName } from "../fls/events";
+import { allGoals, EMPTY_GOALS_CACHE, type GoalRecord, type GoalsCache } from "../stats/goals";
 import type { PlayerProfile } from "../types/player";
 import type { TeamData } from "../types/team";
 import { getStore } from "./kv";
-import { INITIAL_META, KEY_META, KEY_ROSTER, KEY_TEAM, playerKey, type SyncMeta } from "./keys";
+import { INITIAL_META, KEY_GOALS, KEY_META, KEY_ROSTER, KEY_TEAM, playerKey, type SyncMeta } from "./keys";
 
 function hydratePlayer(profile: PlayerProfile): PlayerProfile {
   return {
@@ -42,6 +43,14 @@ export async function getAllPlayers(): Promise<PlayerProfile[]> {
   if (roster.length === 0) return [];
   const profiles = await getStore().getMany<PlayerProfile>(roster.map(playerKey));
   return profiles.filter((p): p is PlayerProfile => p !== null).map(hydratePlayer);
+}
+
+export async function getGoalsCache(): Promise<GoalsCache> {
+  return (await getStore().get<GoalsCache>(KEY_GOALS)) ?? { ...EMPTY_GOALS_CACHE, matches: {} };
+}
+
+export async function getGoalRecords(): Promise<GoalRecord[]> {
+  return allGoals(await getGoalsCache());
 }
 
 export function isStale(lastSyncAt: number | null): boolean {

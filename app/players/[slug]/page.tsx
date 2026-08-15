@@ -6,6 +6,7 @@ import { PlayerCharts } from "@/components/charts/PlayerCharts";
 import { ProfileEntranceSound } from "@/components/effects/ProfileEntranceSound";
 import { GameLogList } from "@/components/stats/GameLogList";
 import { WinRates } from "@/components/stats/WinRates";
+import { BestBuddies } from "@/components/stats/BestBuddies";
 import { SectionShell } from "@/components/stats/SectionShell";
 import { SectionHeading } from "@/components/stats/SectionHeading";
 import { LinkButton } from "@/components/ui/Button";
@@ -34,7 +35,7 @@ export default async function PlayerDetailPage({
   const result = await getPlayerDetail(slug);
   if (!result) notFound();
 
-  const { profile, stats } = result.data;
+  const { profile, stats, winningGoals, buddies } = result.data;
   const s = profile.summary;
   const age = ageFrom(s.dateOfBirth);
 
@@ -53,6 +54,7 @@ export default async function PlayerDetailPage({
       stats: [
         { label: "MVP", value: s.mvp },
         { label: "Gole/mecz", value: s.goalsPerGame.toFixed(2) },
+        ...(winningGoals !== null ? [{ label: "Gole decydujące", value: winningGoals }] : []),
       ],
     },
     {
@@ -131,6 +133,13 @@ export default async function PlayerDetailPage({
         <section className="section container">
           <SectionHeading eyebrow="Skuteczność" title="Win ratio" />
           <WinRates rates={stats.winRates} />
+        </section>
+      )}
+
+      {(buddies.to.length > 0 || buddies.from.length > 0) && (
+        <section className="section container">
+          <SectionHeading eyebrow="Zgranie" title="Best buddies" />
+          <BestBuddies buddies={buddies} />
         </section>
       )}
 

@@ -1,4 +1,6 @@
 export const BASE_URL = "https://rozgrywki.krakow.liga-fls.pl";
+export const FLS_API_URL = "https://api.krakow.liga-fls.pl/graphql-api";
+export const FLS_DOMAIN = "rozgrywki.krakow.liga-fls.pl";
 
 export const TEAM_NAME = "Ogniwo Bielany";
 export const TEAM_SLUG = "ogniwo-bielany";
@@ -19,6 +21,10 @@ export const TEAM_LIVE_MAX_AGE_MS = 60 * 1000;
 export const LIVE_TEAM_TIMEOUT_MS = 12_000;
 /** Data older than this is flagged stale in API responses. */
 export const STALE_AFTER_MS = 24 * 60 * 60 * 1000;
+/** gameDetails aliases per GraphQL request when syncing match events. */
+export const GAME_EVENTS_BATCH = 20;
+/** Recently played matches are refetched each sync in case FLS corrects a result. */
+export const GAME_EVENTS_REFRESH_RECENT = 10;
 
 export interface Competition {
   league: string;

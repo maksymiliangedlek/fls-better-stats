@@ -8,13 +8,15 @@ import { runFullSync } from "../lib/cache/sync";
 
 async function main() {
   const started = Date.now();
-  const { buildId, discovery } = await runFullSync((msg) => console.error(`  ${msg}`));
+  const { buildId, discovery, goals } = await runFullSync((msg) => console.error(`  ${msg}`));
   const secs = ((Date.now() - started) / 1000).toFixed(1);
   console.log("\n─── Sync complete ───");
   console.log("buildId:        ", buildId);
   console.log("roster size:    ", discovery.rosterSize);
   console.log("combos:         ", discovery.combos);
   console.log("profiles cached:", discovery.profilesCached);
+  console.log("goals fetched:  ", goals.fetched);
+  console.log("goals cached:   ", goals.cached);
   console.log("elapsed:        ", `${secs}s`);
 }
 

@@ -19,8 +19,8 @@ export async function POST(req: NextRequest) {
   }
 
   try {
-    const { buildId, discovery } = await runFullSync();
-    return NextResponse.json({ ok: true, buildId, discovery });
+    const { buildId, discovery, goals } = await runFullSync();
+    return NextResponse.json({ ok: true, buildId, discovery, goals });
   } catch (err) {
     return NextResponse.json({ ok: false, error: (err as Error).message }, { status: 500 });
   }

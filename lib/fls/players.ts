@@ -103,6 +103,7 @@ export function parsePlayer(data: NextDataResponse): RawPlayerProfile {
       away: away.name ?? "?",
       pitch: pitch.name ?? "?",
       events,
+      gameId: game.id != null ? String(game.id) : undefined,
     };
   });
 

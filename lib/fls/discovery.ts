@@ -72,6 +72,8 @@ export interface DiscoveryOptions {
   onProgress?: (msg: string) => void;
   /** Optional safety cap on total profile fetches. */
   maxPlayers?: number;
+  /** Extra (league, season) pairs to start BFS from, besides the current seed. */
+  seedCombos?: Combo[];
 }
 
 /**
@@ -85,10 +87,10 @@ export async function discoverRoster(
   buildId: string,
   opts: DiscoveryOptions = {},
 ): Promise<DiscoveryResult> {
-  const { onProfile, onProgress, maxPlayers = 500 } = opts;
+  const { onProfile, onProgress, maxPlayers = 500, seedCombos = [] } = opts;
 
   const visitedCombos = new Set<string>();
-  const comboQueue: Combo[] = [SEED_COMBO];
+  const comboQueue: Combo[] = [SEED_COMBO, ...seedCombos];
   const rosterSlugs = new Set<string>();
   const visitedPlayers = new Set<string>();
   const playerQueue: string[] = [];

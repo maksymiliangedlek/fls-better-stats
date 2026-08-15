@@ -1,6 +1,7 @@
 export const KEY_META = "fls:meta";
 export const KEY_ROSTER = "fls:roster";
 export const KEY_TEAM = "fls:team";
+export const KEY_GOALS = "fls:goals";
 
 export function playerKey(slug: string): string {
   return `fls:player:${slug}`;

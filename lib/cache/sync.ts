@@ -7,6 +7,8 @@ import {
 import {
   CURRENT_LEAGUE,
   CURRENT_SEASON,
+  GAME_EVENTS_BATCH,
+  GAME_EVENTS_REFRESH_RECENT,
   LIVE_TEAM_TIMEOUT_MS,
   PLAYERS_PER_SYNC,
   TEAM_LIVE_MAX_AGE_MS,
@@ -16,14 +18,21 @@ import {
   type Competition,
 } from "../fls/config";
 import { discoverRoster, fetchSeasonRoster } from "../fls/discovery";
+import { fetchGameDetailsBatch } from "../fls/gameEvents";
 import { filterOgniwo, parsePlayer } from "../fls/players";
 import { parseTeamData } from "../fls/teams";
 import type { PlayerProfile } from "../types/player";
 import type { TeamData } from "../types/team";
+import {
+  collectOgniwoGameIds,
+  matchMetaFromDetails,
+  parseGameGoals,
+  type GoalsCache,
+} from "../stats/goals";
 import { mergeTeamMatches } from "../stats/matches";
 import { getStore } from "./kv";
-import { getMeta, getRoster, getTeamData } from "./read";
-import { KEY_META, KEY_ROSTER, KEY_TEAM, playerKey, type SyncMeta } from "./keys";
+import { getAllPlayers, getGoalsCache, getMeta, getRoster, getTeamData } from "./read";
+import { KEY_GOALS, KEY_META, KEY_ROSTER, KEY_TEAM, playerKey, type SyncMeta } from "./keys";
 
 async function saveMeta(meta: SyncMeta): Promise<void> {
   await getStore().set(KEY_META, meta);
@@ -213,7 +222,14 @@ export async function runDiscovery(
       cached += 1;
     },
     onProgress,
+    seedCombos: meta.combos,
   });
+
+  if (result.slugs.length === 0) {
+    onProgress?.("discovery found 0 players; keeping existing roster");
+    const roster = await getRoster();
+    return { rosterSize: roster.length, combos: meta.combos.length, profilesCached: cached };
+  }
 
   await store.set(KEY_ROSTER, result.slugs);
   meta.combos = result.combos;
@@ -295,6 +311,64 @@ export async function syncPlayerChunk(buildId: string, meta: SyncMeta): Promise<
   return refreshed;
 }
 
+function chunkIds(ids: string[], size: number): string[][] {
+  const out: string[][] = [];
+  for (let i = 0; i < ids.length; i += size) out.push(ids.slice(i, i + size));
+  return out;
+}
+
+export interface GameEventsSyncResult {
+  fetched: number;
+  cached: number;
+}
+
+/**
+ * Pull FLS match timelines for Ogniwo games missing from the goals cache,
+ * and refresh the most recent results in case FLS corrected a score.
+ */
+export async function syncGameEvents(
+  onProgress?: (msg: string) => void,
+): Promise<GameEventsSyncResult> {
+  const [players, existing] = await Promise.all([getAllPlayers(), getGoalsCache()]);
+  const known = collectOgniwoGameIds(players);
+  if (known.size === 0) {
+    return { fetched: 0, cached: Object.keys(existing.matches).length };
+  }
+
+  const missing: string[] = [];
+  for (const id of known.keys()) {
+    if (!existing.matches[id]) missing.push(id);
+  }
+
+  const recent = [...known.entries()]
+    .sort((a, b) => b[1].date.localeCompare(a[1].date))
+    .slice(0, GAME_EVENTS_REFRESH_RECENT)
+    .map(([id]) => id);
+
+  const toFetch = [...new Set([...missing, ...recent])];
+  const next: GoalsCache = { matches: { ...existing.matches } };
+
+  onProgress?.(`match events: ${toFetch.length} to fetch (${missing.length} new)`);
+
+  for (const batch of chunkIds(toFetch, GAME_EVENTS_BATCH)) {
+    const details = await fetchGameDetailsBatch(batch);
+    for (let i = 0; i < batch.length; i++) {
+      const game = details[i];
+      const id = batch[i];
+      if (!game) continue;
+      const meta = matchMetaFromDetails(game);
+      next.matches[id] = {
+        date: meta.date !== "?" ? meta.date : (known.get(id)?.date ?? meta.date),
+        opponent: meta.opponent,
+        goals: parseGameGoals(game),
+      };
+    }
+  }
+
+  await getStore().set(KEY_GOALS, next);
+  return { fetched: toFetch.length, cached: Object.keys(next.matches).length };
+}
+
 export interface CronSyncResult {
   buildId: string;
   phase: "discovery" | "players";
@@ -302,6 +376,7 @@ export interface CronSyncResult {
   combos: number;
   refreshed?: number;
   discovery?: DiscoverySummary;
+  goals?: GameEventsSyncResult;
 }
 
 /**
@@ -320,19 +395,22 @@ export async function runCronSync(): Promise<CronSyncResult> {
 
     if (!meta.discovered) {
       const discovery = await runDiscovery(buildId, meta);
+      const goals = await syncGameEvents();
       return {
         buildId,
         phase: "discovery",
         rosterSize: discovery.rosterSize,
         combos: discovery.combos,
         discovery,
+        goals,
       };
     }
 
     await absorbSeasonRosters(buildId, meta);
     const refreshed = await syncPlayerChunk(buildId, meta);
+    const goals = await syncGameEvents();
     const rosterSize = (await getRoster()).length;
-    return { buildId, phase: "players", rosterSize, combos: meta.combos.length, refreshed };
+    return { buildId, phase: "players", rosterSize, combos: meta.combos.length, refreshed, goals };
   };
 
   try {
@@ -350,14 +428,15 @@ export async function runCronSync(): Promise<CronSyncResult> {
 /** Full sync: build id + team + discovery (used by /api/sync and sync-local). */
 export async function runFullSync(
   onProgress?: (msg: string) => void,
-): Promise<{ buildId: string; discovery: DiscoverySummary }> {
+): Promise<{ buildId: string; discovery: DiscoverySummary; goals: GameEventsSyncResult }> {
   const meta = await getMeta();
 
   const step = async () => {
     const buildId = await ensureBuildId(meta);
     await syncTeamPages(buildId, meta);
     const discovery = await runDiscovery(buildId, meta, onProgress);
-    return { buildId, discovery };
+    const goals = await syncGameEvents(onProgress);
+    return { buildId, discovery, goals };
   };
 
   try {

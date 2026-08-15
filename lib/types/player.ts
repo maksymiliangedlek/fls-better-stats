@@ -35,6 +35,8 @@ export interface GameLog {
   away: string;
   pitch: string;
   events: string[];
+  /** FLS Game.id; optional so older cache entries still hydrate. */
+  gameId?: string;
 }
 
 export interface PlayerProfile {

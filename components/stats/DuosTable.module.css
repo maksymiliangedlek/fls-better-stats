@@ -1,0 +1,74 @@
+.wrap {
+  background: var(--surface);
+  border: 1px solid var(--c-line);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow-sm);
+  overflow: hidden;
+}
+
+.scroll {
+  overflow-x: auto;
+}
+
+.table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.table thead th {
+  text-align: right;
+  padding: 0.75rem 0.9rem;
+  background: var(--c-off-white);
+  border-bottom: 1px solid var(--c-line);
+  white-space: nowrap;
+}
+
+.table tbody td {
+  text-align: right;
+  padding: 0.7rem 0.9rem;
+  border-bottom: 1px solid var(--c-line);
+  font-variant-numeric: tabular-nums;
+}
+
+.table tbody tr:hover {
+  background: var(--c-navy-050);
+}
+
+.rankCol {
+  text-align: center !important;
+  width: 44px;
+  color: var(--c-muted);
+}
+
+.nameCol {
+  text-align: left !important;
+  min-width: 140px;
+}
+
+.playerLink {
+  font-weight: 600;
+  color: var(--c-navy);
+}
+
+.playerLink:hover {
+  color: var(--c-gold-dark);
+  text-decoration: underline;
+}
+
+.strong {
+  font-weight: 800;
+  color: var(--c-navy);
+}
+
+.empty {
+  text-align: center !important;
+  color: var(--c-muted);
+  padding: 2rem !important;
+}
+
+@media (max-width: 639px) {
+  .table thead th,
+  .table tbody td {
+    padding: 0.6rem 0.55rem;
+  }
+}

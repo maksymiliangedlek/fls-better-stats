@@ -2,6 +2,7 @@ import "server-only";
 import {
   buildMetaEnvelope,
   getAllPlayers,
+  getGoalsCache,
   getPlayer,
   type Meta,
 } from "../cache/read";
@@ -19,6 +20,15 @@ import {
   type SortKey,
 } from "../stats/leaderboards";
 import { buildPlayerStats, type PlayerStats } from "../stats/form";
+import {
+  buildBuddies,
+  buildDuos,
+  buildWinningGoals,
+  lookupFromPlayers,
+  type Duo,
+  type PlayerBuddies,
+} from "../stats/chemistry";
+import { allGoals } from "../stats/goals";
 import { comparePlayers } from "../stats/compare";
 import { mergeTeamMatches, teamMatchesFromPlayers } from "../stats/matches";
 import type { PlayerProfile } from "../types/player";
@@ -85,14 +95,49 @@ export async function getRosterBoard(
 export interface PlayerDetail {
   profile: PlayerProfile;
   stats: PlayerStats;
+  winningGoals: number | null;
+  buddies: PlayerBuddies;
+}
+
+function emptyBuddies(): PlayerBuddies {
+  return { to: [], from: [] };
 }
 
 export async function getPlayerDetail(
   slug: string,
 ): Promise<{ data: PlayerDetail; meta: Meta } | null> {
-  const [profile, meta] = await Promise.all([getPlayer(slug), buildMetaEnvelope()]);
+  const [profile, players, goalsCache, meta] = await Promise.all([
+    getPlayer(slug),
+    getAllPlayers(),
+    getGoalsCache(),
+    buildMetaEnvelope(),
+  ]);
   if (!profile) return null;
-  return { data: { profile, stats: buildPlayerStats(profile) }, meta };
+
+  const ready = Object.keys(goalsCache.matches).length > 0;
+  const goals = ready ? allGoals(goalsCache) : [];
+  const lookup = lookupFromPlayers(players);
+
+  return {
+    data: {
+      profile,
+      stats: buildPlayerStats(profile),
+      winningGoals: ready ? buildWinningGoals(goals, slug) : null,
+      buddies: ready ? buildBuddies(goals, slug, lookup) : emptyBuddies(),
+    },
+    meta,
+  };
+}
+
+export async function getBestDuos(): Promise<{ data: Duo[]; meta: Meta }> {
+  const [players, goalsCache, meta] = await Promise.all([
+    getAllPlayers(),
+    getGoalsCache(),
+    buildMetaEnvelope(),
+  ]);
+  const ready = Object.keys(goalsCache.matches).length > 0;
+  const duos = ready ? buildDuos(allGoals(goalsCache), lookupFromPlayers(players)) : [];
+  return { data: duos, meta };
 }
 
 export type CompareOutcome =

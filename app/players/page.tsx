@@ -1,7 +1,8 @@
 import type { Metadata } from "next";
-import { getRosterBoard } from "@/lib/data/queries";
+import { getRosterBoard, getBestDuos } from "@/lib/data/queries";
 import { RosterGrid } from "@/components/roster/RosterGrid";
 import { LeaderboardTable } from "@/components/stats/LeaderboardTable";
+import { DuosTable } from "@/components/stats/DuosTable";
 import { SectionHeading } from "@/components/stats/SectionHeading";
 import { LinkButton } from "@/components/ui/Button";
 
@@ -13,7 +14,10 @@ export const metadata: Metadata = {
 };
 
 export default async function PlayersPage() {
-  const { data } = await getRosterBoard("all", "goals");
+  const [{ data }, { data: duos }] = await Promise.all([
+    getRosterBoard("all", "goals"),
+    getBestDuos(),
+  ]);
 
   return (
     <>
@@ -36,6 +40,13 @@ export default async function PlayersPage() {
         <section className="section container">
           <SectionHeading eyebrow="Ranking" title="Tabela statystyk" />
           <LeaderboardTable initial={data} />
+        </section>
+      )}
+
+      {duos.length > 0 && (
+        <section className="section container">
+          <SectionHeading eyebrow="Zgranie" title="Najlepsze duety" />
+          <DuosTable duos={duos} />
         </section>
       )}
     </>
