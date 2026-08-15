@@ -1,4 +1,5 @@
 "use client";
+import { useState } from "react";
 import { motion } from "motion/react";
 import styles from "./FlyingDuck.module.css";
 
@@ -16,6 +17,9 @@ export function FlyingDuck({
   originY: number;
   startX: number;
 }) {
+  const [landed, setLanded] = useState(false);
+  const [flapping, setFlapping] = useState(false);
+
   return (
     <motion.div
       className={styles.flyer}
@@ -33,15 +37,28 @@ export function FlyingDuck({
         y: { duration: FLY_DURATION, ease: "easeInOut" },
         rotate: { duration: FLY_DURATION, ease: "easeInOut" },
       }}
+      onAnimationComplete={() => setLanded(true)}
       aria-hidden
     >
-      <div className={styles.duck}>
+      <div
+        className={`${styles.duck} ${landed ? styles.landed : ""} ${
+          flapping ? styles.flapping : ""
+        }`}
+      >
         {/* eslint-disable-next-line @next/next/no-img-element */}
-        <img className={`${styles.wing} ${styles.wingFar}`} src="/nowe-lewe-skrzydlo.png" alt="" />
+        <img className={`${styles.wing} ${styles.wingFar}`} src="/lewe-test.png" alt="" />
         {/* eslint-disable-next-line @next/next/no-img-element */}
         <img className={styles.body} src="/duck-body.png" alt="" />
         {/* eslint-disable-next-line @next/next/no-img-element */}
-        <img className={`${styles.wing} ${styles.wingNear}`} src="/duck-wing-right.png" alt="" />
+        <img
+          className={`${styles.wing} ${styles.wingNear}`}
+          src="/duck-wing-right.png"
+          alt=""
+          onAnimationEnd={() => setFlapping(false)}
+        />
+        {landed && (
+          <div className={styles.hit} onPointerEnter={() => setFlapping(true)} />
+        )}
       </div>
     </motion.div>
   );

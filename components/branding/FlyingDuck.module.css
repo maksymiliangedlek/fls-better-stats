@@ -17,6 +17,9 @@
   top: 32.6%;
   width: 39.45%;
   height: 28.03%;
+  /* Single source for the crest pose, shared by the landing and the hover flap. */
+  --rest-far: rotate(-45.5deg);
+  --rest-near: translate(32.7%, -41.6%) rotate(-15deg) translate(-32.7%, 41.6%) rotate(16deg);
 }
 
 .body {
@@ -41,9 +44,10 @@
 
 .wingFar {
   z-index: 1;
-  left: 38.5%;
-  top: 5.1%;
-  width: 40%;
+  /* Sized and placed so the shoulder sits on the back and the tip lands where duck.png has it. */
+  left: 44.3%;
+  top: 3.4%;
+  width: 33.2%;
   transform-origin: 33.8% 91.6%;
   animation-name: flapFar;
 }
@@ -84,11 +88,11 @@
     transform: rotate(18deg);
   }
   90% {
-    transform: rotate(-44deg);
+    transform: rotate(-41deg);
   }
   /* Crest pose — matched to the duck inside crest.png. */
   100% {
-    transform: rotate(-49deg);
+    transform: var(--rest-far);
   }
 }
 
@@ -117,8 +121,56 @@
   /* Crest pose is reached while still approaching, then held through arrival. */
   78%,
   100% {
-    transform: translate(32.7%, -41.6%) rotate(-15deg) translate(-32.7%, 41.6%) rotate(16deg);
+    transform: var(--rest-near);
   }
+}
+
+/* Once landed the pose is static, so a new animation can take over cleanly. */
+.landed .wingFar {
+  animation: none;
+  transform: var(--rest-far);
+}
+
+.landed .wingNear {
+  animation: none;
+  transform: var(--rest-near);
+}
+
+.landed.flapping .wingFar {
+  animation: flapOnceFar 0.5s ease-in-out;
+}
+
+.landed.flapping .wingNear {
+  animation: flapOnceNear 0.5s ease-in-out;
+}
+
+/* One upstroke and back down into the crest pose. */
+@keyframes flapOnceFar {
+  0%,
+  100% {
+    transform: var(--rest-far);
+  }
+  40% {
+    transform: rotate(16deg);
+  }
+}
+
+@keyframes flapOnceNear {
+  0%,
+  100% {
+    transform: var(--rest-near);
+  }
+  40% {
+    transform: translate(32.7%, -41.6%) rotate(-15deg) translate(-32.7%, 41.6%) rotate(-14deg);
+  }
+}
+
+/* Re-enables pointer events that the flyer wrapper switches off. */
+.hit {
+  position: absolute;
+  inset: -8px;
+  z-index: 4;
+  pointer-events: auto;
 }
 
 @media (max-width: 639px) {
