@@ -1,7 +1,8 @@
 "use client";
-import { useLayoutEffect, useRef, useState } from "react";
+import { useEffect, useLayoutEffect, useRef, useState } from "react";
 import { motion, type Easing } from "motion/react";
 import { FLY_DURATION } from "./FlyingDuck";
+import { useLetterProximity } from "./useLetterProximity";
 import styles from "./FallingTitle.module.css";
 
 const WORDS = ["OGNIWO", "BIELANY"] as const;
@@ -21,7 +22,9 @@ type Geo = {
 export function FallingTitle({ active, reduced }: { active: boolean; reduced: boolean }) {
   const titleRef = useRef<HTMLHeadingElement>(null);
   const wordRefs = [useRef<HTMLSpanElement>(null), useRef<HTMLSpanElement>(null)];
+  const letterRefs = useRef<(HTMLSpanElement | null)[]>([]);
   const [geo, setGeo] = useState<Geo | null>(null);
+  const [settled, setSettled] = useState(false);
 
   useLayoutEffect(() => {
     const h1 = titleRef.current;
@@ -57,6 +60,15 @@ export function FallingTitle({ active, reduced }: { active: boolean; reduced: bo
 
   const run = active && geo && !reduced;
 
+  // No entrance to wait for when reduced motion is on — go straight to interactive.
+  useEffect(() => {
+    if (reduced) setSettled(true);
+  }, [reduced]);
+
+  useLetterProximity(titleRef, letterRefs, settled && !reduced);
+
+  let letterIndex = 0;
+
   return (
     <h1
       ref={titleRef}
@@ -83,13 +95,18 @@ export function FallingTitle({ active, reduced }: { active: boolean; reduced: bo
                   : undefined
               }
               transition={run ? { duration: FLY_DURATION, times: TIMES, ease: EASE } : { duration: 0 }}
+              onAnimationComplete={run ? () => setSettled(true) : undefined}
             >
               {letters.map((ch, i) => {
+                const currentIndex = letterIndex++;
                 const off = geo ? (mid - i) * geo.squeeze : 0;
                 const contact = w === 0 ? i === letters.length - 1 : i === 0;
                 return (
                   <motion.span
                     key={`${ch}${i}`}
+                    ref={(el) => {
+                      letterRefs.current[currentIndex] = el;
+                    }}
                     className={styles.letter}
                     animate={
                       run

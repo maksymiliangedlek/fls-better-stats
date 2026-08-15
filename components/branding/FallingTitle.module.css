@@ -34,6 +34,14 @@
   margin-right: 0.5em;
   transform-origin: center bottom;
   will-change: transform;
+  /* Set on a rAF loop once settled — cursor proximity, 0 (far) to 1 (under cursor). */
+  --prox: 0;
+  color: color-mix(
+    in srgb,
+    var(--c-navy) calc(100% - var(--prox) * 35%),
+    var(--c-gold-dark) calc(var(--prox) * 50%)
+  );
+  text-shadow: 0 0 calc(var(--prox) * 8px) rgba(201, 162, 39, calc(var(--prox) * 0.25));
 }
 
 .letter:last-child {
