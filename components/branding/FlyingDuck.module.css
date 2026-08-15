@@ -94,35 +94,30 @@
 
 @keyframes flapNear {
   0% {
-    transform: rotate(-22deg);
+    transform: translate(32.7%, -41.6%) rotate(0deg) translate(-32.7%, 41.6%) rotate(-22deg);
   }
   14% {
-    transform: rotate(30deg);
+    transform: translate(32.7%, -41.6%) rotate(0deg) translate(-32.7%, 41.6%) rotate(30deg);
   }
   24% {
-    transform: rotate(-24deg);
+    transform: translate(32.7%, -41.6%) rotate(0deg) translate(-32.7%, 41.6%) rotate(-24deg);
   }
   34% {
-    transform: rotate(28deg);
+    transform: translate(32.7%, -41.6%) rotate(0deg) translate(-32.7%, 41.6%) rotate(28deg);
   }
   44% {
-    transform: rotate(-23deg);
+    transform: translate(32.7%, -41.6%) rotate(0deg) translate(-32.7%, 41.6%) rotate(-23deg);
   }
   56% {
-    transform: rotate(24deg);
+    transform: translate(32.7%, -41.6%) rotate(0deg) translate(-32.7%, 41.6%) rotate(24deg);
   }
   68% {
-    transform: rotate(-22deg);
+    transform: translate(32.7%, -41.6%) rotate(0deg) translate(-32.7%, 41.6%) rotate(-22deg);
   }
-  82% {
-    transform: rotate(14deg);
-  }
-  92% {
-    transform: rotate(12deg);
-  }
-  /* Crest pose — matched to the duck inside crest.png. */
+  /* Crest pose is reached while still approaching, then held through arrival. */
+  78%,
   100% {
-    transform: rotate(16deg);
+    transform: translate(32.7%, -41.6%) rotate(-15deg) translate(-32.7%, 41.6%) rotate(16deg);
   }
 }
 

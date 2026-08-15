@@ -37,7 +37,7 @@ export function FlyingDuck({
     >
       <div className={styles.duck}>
         {/* eslint-disable-next-line @next/next/no-img-element */}
-        <img className={`${styles.wing} ${styles.wingFar}`} src="/duck-wing-left.png" alt="" />
+        <img className={`${styles.wing} ${styles.wingFar}`} src="/nowe-lewe-skrzydlo.png" alt="" />
         {/* eslint-disable-next-line @next/next/no-img-element */}
         <img className={styles.body} src="/duck-body.png" alt="" />
         {/* eslint-disable-next-line @next/next/no-img-element */}

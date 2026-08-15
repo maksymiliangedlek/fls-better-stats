@@ -58,7 +58,6 @@ export function FallingTitle({ active, reduced }: { active: boolean; reduced: bo
   const run = active && geo && !reduced;
 
   return (
-    // Stays hidden until measured, so the resting text never paints.
     <h1
       ref={titleRef}
       className={styles.title}
@@ -66,48 +65,48 @@ export function FallingTitle({ active, reduced }: { active: boolean; reduced: bo
       aria-label="OGNIWO BIELANY"
     >
       {WORDS.map((word, w) => {
-        const letters = word.split("");
-        const mid = (letters.length - 1) / 2;
-        const inward = w === 0 ? 1 : -1;
+          const letters = word.split("");
+          const mid = (letters.length - 1) / 2;
+          const inward = w === 0 ? 1 : -1;
 
-        return (
-          <motion.span
-            key={word}
-            ref={wordRefs[w]}
-            className={styles.word}
-            animate={
-              run
-                ? {
-                    x: [geo.start[w], inward * geo.knock, -inward * geo.rebound, 0],
-                    rotate: [0, inward * -1.2, inward * 0.5, 0],
-                  }
-                : undefined
-            }
-            transition={run ? { duration: FLY_DURATION, times: TIMES, ease: EASE } : { duration: 0 }}
-          >
-            {letters.map((ch, i) => {
-              const off = geo ? (mid - i) * geo.squeeze : 0;
-              const contact = w === 0 ? i === letters.length - 1 : i === 0;
-              return (
-                <motion.span
-                  key={`${ch}${i}`}
-                  className={styles.letter}
-                  animate={
-                    run
-                      ? {
-                          x: [off, off, off * 0.5, 0],
-                          scaleX: contact ? [1, 1, 0.84, 1] : [1, 1, 0.95, 1],
-                          scaleY: contact ? [1, 1, 1.1, 1] : [1, 1, 1, 1],
-                        }
-                      : undefined
-                  }
-                  transition={
-                    run ? { duration: FLY_DURATION, times: TIMES, ease: EASE } : { duration: 0 }
-                  }
-                >
-                  {ch}
-                </motion.span>
-              );
+          return (
+            <motion.span
+              key={word}
+              ref={wordRefs[w]}
+              className={styles.word}
+              animate={
+                run
+                  ? {
+                      x: [geo.start[w], inward * geo.knock, -inward * geo.rebound, 0],
+                      rotate: [0, inward * -1.2, inward * 0.5, 0],
+                    }
+                  : undefined
+              }
+              transition={run ? { duration: FLY_DURATION, times: TIMES, ease: EASE } : { duration: 0 }}
+            >
+              {letters.map((ch, i) => {
+                const off = geo ? (mid - i) * geo.squeeze : 0;
+                const contact = w === 0 ? i === letters.length - 1 : i === 0;
+                return (
+                  <motion.span
+                    key={`${ch}${i}`}
+                    className={styles.letter}
+                    animate={
+                      run
+                        ? {
+                            x: [off, off, off * 0.5, 0],
+                            scaleX: contact ? [1, 1, 0.84, 1] : [1, 1, 0.95, 1],
+                            scaleY: contact ? [1, 1, 1.1, 1] : [1, 1, 1, 1],
+                          }
+                        : undefined
+                    }
+                    transition={
+                      run ? { duration: FLY_DURATION, times: TIMES, ease: EASE } : { duration: 0 }
+                    }
+                  >
+                    {ch}
+                  </motion.span>
+                );
             })}
           </motion.span>
         );
