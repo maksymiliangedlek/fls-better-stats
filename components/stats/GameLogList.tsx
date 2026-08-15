@@ -1,5 +1,4 @@
 import { TEAM_NAME } from "@/lib/fls/config";
-import { displayEventName } from "@/lib/fls/events";
 import type { GameLog } from "@/lib/types/player";
 import { formatDate } from "@/lib/client/format";
 import styles from "./GameLogList.module.css";
@@ -36,14 +35,11 @@ export function GameLogList({ games }: { games: GameLog[] }) {
             {g.events.length === 0 ? (
               <span className={styles.none}>—</span>
             ) : (
-              g.events.map((ev, j) => {
-                const label = displayEventName(ev);
-                return (
-                  <span key={j} className={`${styles.badge} ${eventClass(label)}`}>
-                    {label}
-                  </span>
-                );
-              })
+              g.events.map((label, j) => (
+                <span key={j} className={`${styles.badge} ${eventClass(label)}`}>
+                  {label}
+                </span>
+              ))
             )}
           </span>
         </li>

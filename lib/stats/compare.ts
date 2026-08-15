@@ -1,5 +1,4 @@
 import { TEAM_NAME } from "../fls/config";
-import { displayEventName } from "../fls/events";
 import { compareSeasons } from "../client/format";
 import type { GameLog, PlayerProfile } from "../types/player";
 import type {
@@ -99,7 +98,7 @@ function buildSharedMatches(profiles: PlayerProfile[]): SharedMatch[] {
       date: game.date,
       opponent: opponentOf(game),
       result: game.result,
-      events: games.map((g) => g.events.map(displayEventName)),
+      events: games.map((g) => g.events),
     });
   }
   return shared.sort((x, y) => y.date.localeCompare(x.date));

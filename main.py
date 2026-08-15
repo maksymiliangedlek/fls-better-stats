@@ -13,12 +13,13 @@ from datetime import datetime
 
 BASE_URL = "https://rozgrywki.krakow.liga-fls.pl"
 
-# EventType ID → nazwa (na podstawie obserwacji)
+# EventType ID → nazwa (3 = MVP, 4 = żółta, 5 = czerwona)
 EVENT_TYPE_NAMES = {
     "1": "Gol",
     "2": "Asysta",
-    "3": "Żółta kartka",
-    "4": "Czerwona kartka",
+    "3": "MVP",
+    "4": "Żółta kartka",
+    "5": "Czerwona kartka",
     "7": "Puszczona bramka",
 }
 

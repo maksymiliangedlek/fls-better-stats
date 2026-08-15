@@ -81,7 +81,7 @@ export function parsePlayer(data: NextDataResponse): RawPlayerProfile {
     const events: string[] = (gp.events ?? []).map((eRef: any) => {
       const ev = resolve(apollo, eRef);
       const et = resolve(apollo, ev.event_type);
-      return eventName(et.id ?? "?", et.name);
+      return eventName(et.id ?? "?", ev.name ?? et.name);
     });
 
     const home = resolve(apollo, resolve(apollo, game.home_team?.competition_team)?.team);

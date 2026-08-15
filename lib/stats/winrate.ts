@@ -1,5 +1,4 @@
 import { TEAM_NAME } from "../fls/config";
-import { displayEventName } from "../fls/events";
 import type { GameLog, PlayerProfile } from "../types/player";
 
 export interface WinRate {
@@ -46,7 +45,7 @@ function rateOf(games: GameLog[]): WinRate {
 }
 
 function hasEvent(game: GameLog, name: string): boolean {
-  return game.events.some((e) => displayEventName(e) === name);
+  return game.events.some((e) => e === name);
 }
 
 export function buildWinRates(profile: PlayerProfile): PlayerWinRates {
