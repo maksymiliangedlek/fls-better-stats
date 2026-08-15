@@ -4,6 +4,7 @@ import { Anton } from "next/font/google";
 import "../styles/globals.css";
 import { SiteHeader } from "@/components/branding/SiteHeader";
 import { SiteFooter } from "@/components/branding/SiteFooter";
+import { SocialIsland } from "@/components/branding/SocialIsland";
 
 const monument = Anton({
   subsets: ["latin-ext"],
@@ -29,6 +30,7 @@ export default function RootLayout({ children }: { children: ReactNode }) {
           }}
         >
           <SiteHeader />
+          <SocialIsland />
           <main style={{ flex: 1 }}>{children}</main>
           <SiteFooter />
         </div>

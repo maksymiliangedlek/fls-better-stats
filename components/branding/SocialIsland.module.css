@@ -1,0 +1,53 @@
+.island {
+  position: fixed;
+  top: 0.75rem;
+  left: 0.75rem;
+  z-index: 50;
+  display: flex;
+  align-items: center;
+  gap: 0.2rem;
+  padding: 0.35rem;
+  border-radius: 999px;
+  background: var(--material-chrome);
+  color: var(--text-on-navy);
+  backdrop-filter: var(--material-chrome-blur);
+  -webkit-backdrop-filter: var(--material-chrome-blur);
+  box-shadow: 0 8px 28px rgba(6, 39, 54, 0.28);
+  border: 1px solid var(--material-edge);
+}
+
+.link {
+  display: grid;
+  place-items: center;
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  color: rgba(255, 255, 255, 0.78);
+  transition: color var(--duration-spring) var(--ease-spring),
+    background-color var(--duration-spring) var(--ease-spring);
+}
+
+.link:hover {
+  color: #fff;
+  background: rgba(255, 255, 255, 0.14);
+}
+
+.link:active {
+  transform: scale(var(--press-scale));
+  transition: transform 100ms ease-out;
+}
+
+@media (prefers-reduced-transparency: reduce) {
+  .island {
+    background: var(--c-navy);
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
+  }
+}
+
+@media (max-width: 480px) {
+  .link {
+    width: 32px;
+    height: 32px;
+  }
+}
