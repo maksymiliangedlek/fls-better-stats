@@ -62,13 +62,13 @@ function seasonYear(name: string): number {
 
 function seasonPhase(name: string): number {
   const lower = name.toLowerCase().normalize("NFD").replace(/\p{M}/gu, "");
-  if (lower.includes("jesien")) return 0;
+  if (lower.includes("wiosna")) return 0;
   if (lower.includes("zima")) return 1;
-  if (lower.includes("wiosna")) return 2;
+  if (lower.includes("jesien")) return 2;
   return 3;
 }
 
-/** Oldest → newest: year (last 4 chars), then jesień, zima, wiosna. */
+/** Oldest → newest: year (last 4 chars), then wiosna → zima → jesień within that year. */
 export function compareSeasons(a: string, b: string): number {
   return seasonYear(a) - seasonYear(b) || seasonPhase(a) - seasonPhase(b) || a.localeCompare(b);
 }
